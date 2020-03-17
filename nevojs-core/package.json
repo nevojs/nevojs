@@ -28,7 +28,7 @@
     "rollup-plugin-typescript2": "0.25.3",
     "rollup-plugin-uglify": "6.0.4",
     "ts-jest": "25.1.0",
-    "typescript": "3.8.3",
-    "typedoc": "next"
+    "typedoc": "next",
+    "typescript": "3.8.3"
   }
 }
