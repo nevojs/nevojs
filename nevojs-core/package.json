@@ -1,0 +1,34 @@
+{
+  "name": "@nevojs/core",
+  "version": "0.1.0",
+  "private": false,
+  "author": "Aleksander Ciesielski",
+  "license": "Apache 2.0",
+  "main": "./dist/exports.js",
+  "types": "./dist/exports.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "test-watch": "jest --watchAll",
+    "coverage": "jest --coverage",
+    "lint": "eslint src/**",
+    "fix": "eslint --fix src/** --ext .ts",
+    "api": "typedoc --json ./api.json --excludeNotExported --mode file ./src/exports.ts"
+  },
+  "devDependencies": {
+    "@types/jest": "25.1.1",
+    "@types/node": "13.7.0",
+    "@typescript-eslint/eslint-plugin": "2.18.0",
+    "@typescript-eslint/parser": "2.18.0",
+    "eslint": "6.8.0",
+    "eslint-plugin-import": "2.20.0",
+    "jest": "25.1.0",
+    "rollup": "1.31.0",
+    "rollup-plugin-terser": "5.2.0",
+    "rollup-plugin-typescript2": "0.25.3",
+    "rollup-plugin-uglify": "6.0.4",
+    "ts-jest": "25.1.0",
+    "typescript": "3.8.3",
+    "typedoc": "next"
+  }
+}

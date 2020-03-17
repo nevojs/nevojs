@@ -1,0 +1,30 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "emitDecoratorMetadata": false,
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "declarationMap": true,
+    "alwaysStrict": true,
+    "strict": true,
+    "pretty": true,
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "lib": [
+      "es2017",
+      "es2019.object",
+      "dom"
+    ],
+    "jsx": "react"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
