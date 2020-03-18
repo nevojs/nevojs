@@ -15,10 +15,10 @@
  * =============================================================================
  */
 
+import { Serializable, SerializableValue } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { Genotype } from "../individual/data";
 import { MutationMethod } from "../operators/mutation";
-import { Serializable, SerializableValue } from "../serialization";
 
 /**
  *
