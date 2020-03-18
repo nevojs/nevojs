@@ -15,13 +15,13 @@
  * =============================================================================
  */
 
-import { Group, GroupConstructorSettings } from "./individual/group";
 import { AnyIndividual, Individual, IndividualConstructorSettings } from "./individual/individual";
-import { ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";
-import { Genotype } from "./individual/data";
 import { Blueprint, BlueprintConstructorSettings } from "./individual/blueprint/blueprint";
+import { Group, GroupConstructorSettings } from "./individual/group";
+import { Genotype } from "./individual/data";
 import { List } from "./genotype/list";
 import { Objective } from "./individual/evaluation/objective";
+import { ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";
 
 /**
  *
