@@ -1,6 +1,6 @@
+import { Objective } from "./objective";
 import { Genotype } from "../data";
 import { Individual } from "../individual";
-import { Objective } from "./objective";
 
 /**
  *

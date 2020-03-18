@@ -15,15 +15,15 @@
  * =============================================================================
  */
 
-import { AnyBlueprint, AsyncBlueprint, SyncBlueprint } from "./individual/blueprint/blueprint_aliases";
-import { AnyIndividual, Individual } from "./individual/individual";
-import { Genotype, GenotypeData } from "./individual/data";
 import { Blueprint } from "./individual/blueprint/blueprint";
+import { Group } from "./individual/group";
+import { AnyIndividual, Individual } from "./individual/individual";
+import { Resolved } from "./util";
+import { AnyBlueprint, AsyncBlueprint, SyncBlueprint } from "./individual/blueprint/blueprint_aliases";
+import { MutationMethod } from "./operators/mutation";
+import { Genotype, GenotypeData } from "./individual/data";
 import { CrossoverMethod } from "./operators/crossover";
 import { EvaluationFunction } from "./individual/evaluation/evaluation_function";
-import { Group } from "./individual/group";
-import { MutationMethod } from "./operators/mutation";
-import { Resolved } from "./util";
 
 /**
  *

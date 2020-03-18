@@ -16,8 +16,8 @@
  */
 
 import * as selection from "./selection";
-import { AnyIndividual, Individual } from "../individual/individual";
 import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
+import { AnyIndividual, Individual } from "../individual/individual";
 import { List } from "../genotype/list";
 import { SelectionMethod } from "./selection";
 import { maximize } from "../creation";

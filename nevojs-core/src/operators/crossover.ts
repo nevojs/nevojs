@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { isPositiveInt, pick, range, shuffle } from "../util";
+import { pick, range, shuffle, isPositiveInt } from "../util";
 
 /**
  *

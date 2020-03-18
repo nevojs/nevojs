@@ -1,8 +1,8 @@
 import { Genotype, GenotypeData } from "./data";
-import { CrossoverMethod } from "../operators/crossover";
-import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { Individual } from "./individual";
 import { MutationMethod } from "../operators/mutation";
+import { CrossoverMethod } from "../operators/crossover";
+import { EvaluationFunction } from "./evaluation/evaluation_function";
 
 export abstract class IndividualDefaults<G extends Genotype, P> {
   protected evaluationFunc?: EvaluationFunction<G, P>;
