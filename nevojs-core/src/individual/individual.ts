@@ -15,14 +15,14 @@
  * =============================================================================
  */
 
+import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
 import { Genotype, GenotypeData, State } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
-import { toArray, Resolved, deepClone, id } from "../util";
+import { Resolved, deepClone, id, toArray } from "../util";
+import { Serializable, SerializableObject, deserialize, isSerializable, serialize } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
-import { MutationMethod } from "../operators/mutation";
 import { IndividualDefaults } from "./individual_defaults";
-import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
-import { serialize, deserialize, Serializable, SerializableObject, isSerializable } from "../serialization";
+import { MutationMethod } from "../operators/mutation";
 
 /**
  *

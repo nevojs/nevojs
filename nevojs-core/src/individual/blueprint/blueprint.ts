@@ -15,14 +15,14 @@
  * =============================================================================
  */
 
+import { Genotype, State } from "../data";
 import {
   Individual,
   IndividualDeserializationSettings, ResolvedIndividual,
   SerializedIndividual,
 } from "../individual";
-import { Genotype, State } from "../data";
-import { Resolved } from "../../util";
 import { IndividualDefaults } from "../individual_defaults";
+import { Resolved } from "../../util";
 
 /**
  *
