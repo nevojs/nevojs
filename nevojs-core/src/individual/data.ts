@@ -39,5 +39,7 @@ export type GenotypeData<G extends Genotype> = G extends Genotype<infer D> ? D :
  *
  */
 export type State = {
+  apply?: void;
+  call?: void;
   [key: string]: any;
 };
