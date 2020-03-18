@@ -21,13 +21,13 @@ import {
   Individual, IndividualConstructorSettings,
 } from "./individual";
 import { GenotypeOf, PhenotypeOf } from "../util_types";
+import { ScalarizationMethod, weightedSum } from "./multiobjective_optimization/scalarization";
 import { merge, pick } from "../util";
 import { CrossoverMethod } from "../operators/crossover";
+import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { GenotypeData } from "./data";
 import { MutationMethod } from "../operators/mutation";
 import { SelectionMethod } from "../operators/selection";
-import { EvaluationFunction } from "./evaluation/evaluation_function";
-import { ScalarizationMethod, weightedSum } from "./multiobjective_optimization/scalarization";
 
 /**
  *
