@@ -29,7 +29,7 @@ import { Resolved } from "../../util";
  */
 export interface BlueprintCreationSettings<G extends Genotype | Promise<Genotype>, P> extends BlueprintConstructorSettings<G, P> {
   arg: () => any;
-  state: () => any;
+  state: () => State;
 }
 
 /**
@@ -88,7 +88,9 @@ export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends Indivi
     }
 
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
-    const state = settings.state;
+    const state: State | undefined = settings.state
+      ? settings.state()
+      : undefined;
 
     const individual = new Individual({
       genotype: genotype as Resolved<G>,
