@@ -242,6 +242,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(this.objectives().map(objective => objective.clone()));
+    this.applyDefaults(individual);
 
     return individual;
   }
