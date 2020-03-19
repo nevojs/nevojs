@@ -21,54 +21,59 @@ import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { Individual } from "./individual";
 import { MutationMethod } from "../operators/mutation";
 
+/**
+ *
+ */
+export enum Default {
+  Evaluation = "evaluation",
+  Mutation = "mutation",
+  Crossover = "crossover",
+}
+
+/**
+ *
+ */
+export type DefaultsValues<G extends Genotype, P> = {
+  [Default.Evaluation]: EvaluationFunction<G, P>;
+  [Default.Mutation]: MutationMethod<GenotypeData<G>>;
+  [Default.Crossover]: CrossoverMethod<GenotypeData<G>>;
+  [unknownDefault: string]: unknown;
+}
+
+type DefaultKey = Default | (Default[keyof Default] & string);
+
+/**
+ *
+ */
 export abstract class IndividualDefaults<G extends Genotype, P> {
-  protected evaluationFunc?: EvaluationFunction<G, P>;
-  protected mutationMethod?: MutationMethod<GenotypeData<G>>;
-  protected crossoverMethod?: CrossoverMethod<GenotypeData<G>>;
+  protected data: Partial<DefaultsValues<G, P>> = {};
 
   /**
    *
-   * @param func
+   * @param field
+   * @param data
    */
-  public setDefaultEvaluation(func: EvaluationFunction<G, P>): void {
-    this.evaluationFunc = func;
+  public setDefault<T extends DefaultKey>(
+    field: T,
+    data: DefaultsValues<G, P>[T],
+  ): void {
+    this.data[field] = data;
   }
 
   /**
    *
+   * @param field
    */
-  public get hasDefaultEvaluation(): boolean {
-    return Boolean(this.evaluationFunc);
+  public hasDefault(field: Default): boolean {
+    return this.data[field] !== undefined;
   }
 
   /**
    *
-   * @param func
+   * @param field
    */
-  public setDefaultMutation(func: MutationMethod<GenotypeData<G>>): void {
-    this.mutationMethod = func;
-  }
-
-  /**
-   *
-   */
-  public get hasDefaultMutation(): boolean {
-    return Boolean(this.mutationMethod);
-  }
-
-  /**
-   *
-   * @param func
-   */
-  public setDefaultCrossover(func: CrossoverMethod<GenotypeData<G>>): void {
-    this.crossoverMethod = func;
-  }
-
-  /**
-   *
-   */
-  public get hasDefaultCrossover(): boolean {
-    return Boolean(this.crossoverMethod);
+  public getDefault<T extends DefaultKey>(field: T): DefaultsValues<G, P>[T] {
+    return this.data[field] as DefaultsValues<G, P>[T];
   }
 
   /**
@@ -76,16 +81,15 @@ export abstract class IndividualDefaults<G extends Genotype, P> {
    * @param individual
    */
   protected applyDefaults(individual: Individual<G, P>): void {
-    if (this.evaluationFunc) {
-      individual.setDefaultEvaluation(this.evaluationFunc);
-    }
+    const fields = Object.values(Default)
+      .filter(value => typeof value === "string") as Default[];
 
-    if (this.mutationMethod) {
-      individual.setDefaultMutation(this.mutationMethod);
-    }
+    for (const field of fields) {
+      if (!this.hasDefault(field)) {
+        continue;
+      }
 
-    if (this.crossoverMethod) {
-      individual.setDefaultCrossover(this.crossoverMethod);
+      individual.setDefault(field, this.getDefault(field));
     }
   }
 }
