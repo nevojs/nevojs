@@ -36,6 +36,14 @@ export interface IndividualConstructorSettings<G extends Genotype, P> {
 /**
  *
  */
+export interface IndividualCloneSettings<G extends Genotype, P> {
+  genotype?: (data: GenotypeData<G>) => GenotypeData<G>;
+  state?: (state: any) => any;
+}
+
+/**
+ *
+ */
 export interface SerializedIndividual {
   genotype: Serializable;
   state: State;
@@ -221,18 +229,21 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
 
   /**
    *
-   * @param func
-   * @param func2
+   * @param settings
    */
   public clone(
-    func?: (genotype: GenotypeData<G>) => GenotypeData<G>,
-    func2?: (state: State) => State,
+    settings: IndividualCloneSettings<G, P> = {}
   ): Individual<G, P> {
-    const genotype = this.genotype.clone(func) as G;
+    const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = this.phenotypeFunc;
-    const state = deepClone(this.state);
 
-    return new Individual({ genotype, phenotype, state });
+    const stateFunc = settings.state ?? id;
+    const state = deepClone(stateFunc(this.state));
+
+    const individual = new Individual({ genotype, phenotype, state });
+    individual.setObjectives(this.objectives().map(objective => objective.clone()));
+
+    return individual;
   }
 
   /**
