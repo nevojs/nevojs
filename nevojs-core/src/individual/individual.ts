@@ -232,7 +232,10 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
     const phenotype = this.phenotypeFunc;
     const state = deepClone(this.state);
 
-    return new Individual({ genotype, phenotype, state });
+    const individual = new Individual({ genotype, phenotype, state });
+    individual.setObjectives(this.objectives().map(objective => objective.clone()));
+
+    return individual;
   }
 
   /**
