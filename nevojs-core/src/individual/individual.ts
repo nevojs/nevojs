@@ -18,10 +18,10 @@
 import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
 import { Genotype, GenotypeData, State } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
-import { Resolved, deepClone, id, toArray } from "../util";
-import { Serializable, SerializableObject, deserialize, isSerializable, serialize } from "../serialization";
+import { deepClone, id, Resolved, toArray } from "../util";
+import { deserialize, isSerializable, Serializable, SerializableObject, serialize } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
-import { IndividualDefaults } from "./individual_defaults";
+import { IndividualDefaults, Default } from "./individual_defaults";
 import { MutationMethod } from "../operators/mutation";
 
 /**
@@ -166,7 +166,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
    * @param func
    */
   public evaluate<T extends void | Promise<void>>(
-    func: EvaluationFunction<G, P> = this.evaluationFunc!,
+    func: EvaluationFunction<G, P> = this.getDefault(Default.Evaluation),
   ): T {
     if (typeof func !== "function") {
       throw new TypeError();
@@ -250,7 +250,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
    *
    * @param method
    */
-  public mutate(method: MutationMethod<GenotypeData<G>> = this.mutationMethod!): void {
+  public mutate(method: MutationMethod<GenotypeData<G>> = this.getDefault(Default.Mutation)): void {
     if (typeof method !== "function") {
       throw new TypeError();
     }
@@ -327,7 +327,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
    */
   public offspring(
     partners: Individual<G, P>[],
-    method: CrossoverMethod<GenotypeData<G>> = this.crossoverMethod!,
+    method: CrossoverMethod<GenotypeData<G>> = this.getDefault(Default.Crossover),
     settings: Partial<IndividualConstructorSettings<G, P>> = {},
   ): Individual<G, P>[] {
     if (typeof method !== "function") {
