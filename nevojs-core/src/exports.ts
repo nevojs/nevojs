@@ -25,10 +25,6 @@ import { alternateGene, alternatePart, inversion, map, scramble, swap, bound, fl
 export { MutationMethod, MutationBoundSettings, AlternatePartSettings, AlternateGeneSettings, MutationMapSettings, PureMutationMethod, ImpureMutationMethod, MutationMapFunction } from "./operators/mutation";
 export const mutation = { inversion, scramble, map, swap, alternateGene, alternatePart, bound, flip, gauss };
 
-// util
-import { pick, range, shuffle, sum } from "./util";
-export const util = { pick, shuffle, sum, range };
-
 // crossover
 import { blend, ordered, point, simulatedBinary, uniform } from "./operators/crossover";
 export { PointCrossoverSettings, CrossoverMethod, BlendCrossoverSettings, SimulatedBinaryCrossoverSettings, UniformCrossoverSettings } from "./operators/crossover";
