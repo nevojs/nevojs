@@ -48,6 +48,7 @@ export {
   AnyIndividual,
   ResolvedIndividual
 } from "./individual/individual";
+export { Default, DefaultsValues } from "./individual/individual_defaults";
 
 export { EvaluationFunction, Evaluation } from "./individual/evaluation/evaluation_function";
 
