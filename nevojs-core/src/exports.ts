@@ -31,7 +31,7 @@ export { PointCrossoverSettings, CrossoverMethod, BlendCrossoverSettings, Simula
 export const crossover = { point, uniform, ordered, blend, simulatedBinary };
 
 // individual
-export { NSGA2, weightedSum, ScalarizationMethod } from "./individual/multiobjective_optimization/scalarization";
+export { weightedSum, ScalarizationMethod } from "./individual/multiobjective_optimization/scalarization";
 export { Objective, SerializedObjective } from "./individual/evaluation/objective";
 export { BlueprintCreationSettings, Blueprint, BlueprintConstructorSettings } from "./individual/blueprint/blueprint";
 export { AnyBlueprint, AsyncBlueprint, SyncBlueprint, ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";

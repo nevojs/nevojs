@@ -15,9 +15,9 @@
  * =============================================================================
  */
 
+import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
 import { isNumber, isPositiveInt, pick, sum } from "../util";
 import { AnyIndividual } from "../individual/individual";
-import { ScalarizationMethod } from "../individual/multiobjective_optimization/scalarization";
 
 /**
  *
@@ -25,45 +25,33 @@ import { ScalarizationMethod } from "../individual/multiobjective_optimization/s
 export type SelectionMethod<I extends AnyIndividual = any> = (
   amount: number,
   individuals: I[],
-  target: ScalarizationMethod<I>,
 ) => I[];
 
 /**
  *
- * @param amount
- * @param individuals
  * @param target
  * @category selection
  */
-export const best: SelectionMethod = (
-  amount,
-  individuals,
-  target,
-) => individuals.sort((a, b) => target(b) - target(a)).slice(0, amount);
+export function best<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
+  return (amount, individuals) => individuals.sort((a, b) => target(b) - target(a)).slice(0, amount);
+}
 
 /**
  *
- * @param amount
- * @param individuals
  * @param target
  * @category selection
  */
-export const worst: SelectionMethod = (
-  amount,
-  individuals,
-  target,
-) => individuals.sort((a, b) => target(a) - target(b)).slice(0, amount);
+export function worst<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
+  return (amount, individuals) => individuals.sort((a, b) => target(a) - target(b)).slice(0, amount);
+}
 
 /**
  *
- * @param amount
- * @param individuals
  * @category selection
  */
-export const random: SelectionMethod = (
-  amount,
-  individuals,
-) => pick(individuals, amount);
+export function random<I extends AnyIndividual>(): SelectionMethod<I> {
+  return (amount, individuals) => pick(individuals, amount);
+}
 
 /**
  *
@@ -83,7 +71,7 @@ export function tournament<I extends AnyIndividual>(
   settings: TournamentSelectionSettings<I> = {},
 ): SelectionMethod<I> {
   const duplicates = settings.duplicates ?? false;
-  const winner = settings.winner ?? best as SelectionMethod<I>;
+  const winner = settings.winner ?? best() as SelectionMethod<I>;
   const size = settings.size ?? 2;
 
   if (!isNumber(size)|| !isPositiveInt(size)) {
@@ -98,7 +86,7 @@ export function tournament<I extends AnyIndividual>(
     throw new TypeError("");
   }
 
-  return (amount, individuals, target) => {
+  return (amount, individuals) => {
     if (!duplicates && amount > individuals.length) {
       throw new RangeError("");
     }
@@ -112,7 +100,7 @@ export function tournament<I extends AnyIndividual>(
 
     for (let i = 0; i < amount; i++) {
       const sample = pick(clone, size);
-      const [selected] = winner(1, sample, target);
+      const [selected] = winner(1, sample);
 
       picked[i] = selected;
 
@@ -130,48 +118,50 @@ export function tournament<I extends AnyIndividual>(
  * @param fitness
  * @category selection
  */
-export const proportionate = (fitness: number[]): SelectionMethod => (amount, individuals) => {
-  const amountOfIndividuals = individuals.length;
-  const fitnessSum = sum(fitness);
+export function proportionate<I extends AnyIndividual>(fitness: number[]): SelectionMethod<I> {
+  return (amount, individuals) => {
+    const amountOfIndividuals = individuals.length;
+    const fitnessSum = sum(fitness);
 
-  return Array.from(new Array(amount)).map(() => {
-    const roll = Math.random();
+    return Array.from(new Array(amount)).map(() => {
+      const roll = Math.random();
 
-    let currentProbability = 0;
-    const probabilities = fitness.map(x => currentProbability += x / fitnessSum);
+      let currentProbability = 0;
+      const probabilities = fitness.map(x => currentProbability += x / fitnessSum);
 
-    for (let i = 0; i < amountOfIndividuals; i++) {
-      if (roll < probabilities[i]) {
-        return individuals[i];
+      for (let i = 0; i < amountOfIndividuals; i++) {
+        if (roll < probabilities[i]) {
+          return individuals[i];
+        }
       }
-    }
 
-    return individuals[amountOfIndividuals - 1];
-  });
-};
-
-/**
- *
- * @param amount
- * @param individuals
- * @param target
- * @category selection
- */
-export const roulette: SelectionMethod = (amount, individuals, target) => {
-  const method = proportionate(individuals.map(target));
-  return method(amount, individuals, target);
-};
+      return individuals[amountOfIndividuals - 1];
+    });
+  };
+}
 
 /**
  *
- * @param amount
- * @param individuals
  * @param target
  * @category selection
  */
-export const rank: SelectionMethod = (amount, individuals, target) => {
-  individuals.sort((a, b) => target(a) - target(b));
-  const method = proportionate(individuals.map((_, i) => i + 1));
+export function roulette<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
+  return (amount, individuals) => {
+    const method = proportionate<I>(individuals.map(target));
+    return method(amount, individuals);
+  };
+}
 
-  return method(amount, individuals, target);
-};
+/**
+ *
+ * @param target
+ * @category selection
+ */
+export function rank<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
+  return (amount, individuals) => {
+    individuals.sort((a, b) => target(a) - target(b));
+    const method = proportionate<I>(individuals.map((_, i) => i + 1));
+
+    return method(amount, individuals);
+  };
+}
