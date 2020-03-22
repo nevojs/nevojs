@@ -16,9 +16,9 @@
  */
 
 // selection
-import { best, random, rank, roulette, tournament, worst, proportionate } from "./operators/selection";
-export { TournamentSelectionSettings, SelectionMethod } from "./operators/selection";
-export const selection = { best, random, rank, roulette, tournament, worst, proportionate };
+import { best, random, rank, roulette, tournament, worst, proportionate, NSGA2 } from "./operators/selection";
+export { TournamentSelectionSettings, SelectionMethod, NSGA2Settings } from "./operators/selection";
+export const selection = { best, random, rank, roulette, tournament, worst, proportionate, NSGA2 };
 
 // mutation
 import { alternateGene, alternatePart, inversion, map, scramble, swap, bound, flip, gauss } from "./operators/mutation";
