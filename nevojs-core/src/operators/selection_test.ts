@@ -17,7 +17,6 @@
 
 import * as selection from "./selection";
 import { AnyIndividual, Individual } from "../individual/individual";
-import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
 import { List } from "../genotype/list";
 import { SelectionMethod } from "./selection";
 import { maximize } from "../creation";
@@ -37,16 +36,14 @@ interface SelectSettings<I extends AnyIndividual> {
   amount?: number;
   method: SelectionMethod;
   individuals: I[];
-  respect?: ScalarizationMethod<I>;
 }
 
 function select<I extends AnyIndividual>(settings: SelectSettings<I>): I[] {
   const method = settings.method;
   const individuals = settings.individuals;
   const amount = settings.amount ?? 1;
-  const respect = settings.respect ?? weightedSum;
 
-  return method(amount, individuals, respect);
+  return method(amount, individuals);
 }
 
 function returnsIndividualArray(method: SelectionMethod): void {
@@ -64,28 +61,28 @@ function returnsCorrectAmount(method: SelectionMethod): void {
 }
 
 describe("best", () => {
-  returnsIndividualArray(selection.best);
-  returnsCorrectAmount(selection.best);
+  returnsIndividualArray(selection.best());
+  returnsCorrectAmount(selection.best());
 
   it("selects the best individual", () => {
-    const [result] = select({ method: selection.best, individuals });
+    const [result] = select({ method: selection.best(), individuals });
     expect(result.objective(0).value).toBe(5);
   });
 });
 
 describe("worst", () => {
-  returnsIndividualArray(selection.worst);
-  returnsCorrectAmount(selection.worst);
+  returnsIndividualArray(selection.worst());
+  returnsCorrectAmount(selection.worst());
 
   it("selects the worst individual", () => {
-    const [result] = select({ method: selection.worst, individuals });
+    const [result] = select({ method: selection.worst(), individuals });
     expect(result.objective(0).value).toBe(1);
   });
 });
 
 describe("random", () => {
-  returnsIndividualArray(selection.random);
-  returnsCorrectAmount(selection.random);
+  returnsIndividualArray(selection.random());
+  returnsCorrectAmount(selection.random());
 });
 
 describe("tournament", () => {
@@ -100,17 +97,17 @@ describe("tournament", () => {
   });
 
   it("selects the winner using different selection method if provided", () => {
-    const [result] = select({ method: selection.tournament({ size: individuals.length, winner: selection.worst }), individuals });
+    const [result] = select({ method: selection.tournament({ size: individuals.length, winner: selection.worst() }), individuals });
     expect(result.objective(0).value).toBe(1);
   });
 });
 
 describe("roulette", () => {
-  returnsIndividualArray(selection.roulette);
-  returnsCorrectAmount(selection.roulette);
+  returnsIndividualArray(selection.roulette());
+  returnsCorrectAmount(selection.roulette());
 });
 
 describe("rank", () => {
-  returnsIndividualArray(selection.rank);
-  returnsCorrectAmount(selection.rank);
+  returnsIndividualArray(selection.rank());
+  returnsCorrectAmount(selection.rank());
 });

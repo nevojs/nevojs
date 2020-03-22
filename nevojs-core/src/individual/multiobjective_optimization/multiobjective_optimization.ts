@@ -16,6 +16,7 @@
  */
 
 import { AnyIndividual } from "../individual";
+import { ScalarizationMethod } from "./scalarization";
 import { best } from "../../operators/selection";
 
 /**
@@ -99,7 +100,10 @@ export function crowdingDistance<I extends AnyIndividual>(individuals: I[]): Wea
   }
 
   for (let i = 0; i < individuals[0].objectives().length; i++) {
-    const sorted = best(individuals.length, individuals, individual => individual.objective(i).fitness());
+    const criteria: ScalarizationMethod<I> = individual => individual.objective(i).fitness();
+    const selection = best(criteria);
+
+    const sorted = selection(individuals.length, individuals);
 
     distance.set(sorted[0], Infinity);
     distance.set(sorted[l - 1], Infinity);

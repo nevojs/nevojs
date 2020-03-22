@@ -21,7 +21,6 @@ import {
   Individual, IndividualConstructorSettings,
 } from "./individual";
 import { GenotypeOf, PhenotypeOf } from "../util_types";
-import { ScalarizationMethod, weightedSum } from "./multiobjective_optimization/scalarization";
 import { merge, pick } from "../util";
 import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
@@ -115,14 +114,12 @@ export class Group<I extends AnyIndividual> {
    *
    * @param amount
    * @param method
-   * @param target
    */
   private $select(
     amount: number,
     method: SelectionMethod<I>,
-    target: ScalarizationMethod<I> = weightedSum,
   ): I[] {
-    const data = method(amount, this.members(), target);
+    const data = method(amount, this.members());
 
     return data.length === amount ? data : data.slice(0, amount);
   }
@@ -131,14 +128,12 @@ export class Group<I extends AnyIndividual> {
    *
    * @param amount
    * @param method
-   * @param target
    */
   public select(
     amount: number,
     method: SelectionMethod<I>,
-    target?: ScalarizationMethod<I>,
   ): Group<I> {
-    const members = this.$select(amount, method, target);
+    const members = this.$select(amount, method);
     const size = this.size;
 
     return new Group({ members, size });
@@ -148,19 +143,17 @@ export class Group<I extends AnyIndividual> {
    *
    * @param fraction
    * @param method
-   * @param target
    */
   public selectFraction(
     fraction: number,
     method: SelectionMethod<I>,
-    target?: ScalarizationMethod<I>,
   ): Group<I> {
     if (fraction > 1 || 0 > fraction) {
       throw new TypeError();
     }
 
     const amount = Math.round(this.length * fraction);
-    return this.select(amount, method, target);
+    return this.select(amount, method);
   }
 
   /**
@@ -195,13 +188,11 @@ export class Group<I extends AnyIndividual> {
   /**
    *
    * @param method
-   * @param target
    */
   public get(
     method: SelectionMethod<I>,
-    target?: ScalarizationMethod<I>,
   ): I {
-    return this.$select(1, method, target)[0];
+    return this.$select(1, method)[0];
   }
 
   /**
