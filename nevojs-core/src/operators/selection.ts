@@ -18,6 +18,10 @@
 import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
 import { isNumber, isPositiveInt, pick, sum } from "../util";
 import { AnyIndividual } from "../individual/individual";
+import {
+  crowdingDistance,
+  nonDominatedSort
+} from "../individual/multiobjective_optimization/multiobjective_optimization";
 
 /**
  *
@@ -163,5 +167,43 @@ export function rank<I extends AnyIndividual>(target: ScalarizationMethod<I> = w
     const method = proportionate<I>(individuals.map((_, i) => i + 1));
 
     return method(amount, individuals);
+  };
+}
+
+/**
+ *
+ */
+export interface NSGA2Settings<I extends AnyIndividual> {
+  frontiers?: I[][];
+  distances?: WeakMap<I, number>;
+}
+
+/**
+ *
+ * @param settings
+ * @constructor
+ */
+export function NSGA2<I extends AnyIndividual>(settings: NSGA2Settings<I> = {}): SelectionMethod<I> {
+  return (amount, individuals) => {
+    const frontiers = settings.frontiers ?? nonDominatedSort(individuals);
+    const selected: I[] = [];
+
+    while (amount > selected.length) {
+      const front = frontiers.shift()!;
+
+      if (amount - selected.length >= front.length) {
+        selected.push(...front);
+        continue;
+      }
+
+      const distances = settings.distances ?? crowdingDistance(front);
+      const sorted = front.sort((a, b) => {
+        return distances.get(b)! - distances.get(a)!;
+      });
+
+      selected.push(...sorted.slice(0, amount - selected.length));
+    }
+
+    return selected;
   };
 }
