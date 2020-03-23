@@ -37,7 +37,7 @@ export type DefaultsValues<G extends Genotype, P> = {
   [Default.Evaluation]: EvaluationFunction<G, P>;
   [Default.Mutation]: MutationMethod<GenotypeData<G>>;
   [Default.Crossover]: CrossoverMethod<GenotypeData<G>>;
-  [unknownDefault: string]: never;
+  [unknownDefault: string]: unknown;
 }
 
 type DefaultKey = Default | (Default[keyof Default] & string);
