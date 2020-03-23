@@ -112,8 +112,8 @@ export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends Indivi
     settings: Partial<BlueprintCreationSettings<G, P>> = {},
   ): BlueprintSpawnOutput<G, P>[] {
     const individuals: BlueprintSpawnOutput<G, P>[] = new Array(amount);
-
     let async = false;
+
     for (let i = 0; i < amount; i++) {
       individuals[i] = this.spawn(settings);
 
@@ -122,10 +122,11 @@ export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends Indivi
       }
     }
 
-    return (async
-      ? Promise.all(individuals)
-      : individuals
-    ) as BlueprintSpawnOutput<G, P>[];
+    if (async) {
+      return Promise.all(individuals) as unknown as BlueprintSpawnOutput<G, P>[];
+    }
+
+    return individuals;
   }
 
   /**
