@@ -15,49 +15,59 @@
  * =============================================================================
  */
 
-import { Genotype, State } from "../data";
 import {
   Individual,
-  IndividualDeserializationSettings, ResolvedIndividual,
-  SerializedIndividual,
+  IndividualDeserializationSettings, PhenotypeFunction, ResolvedIndividual,
+  SerializedIndividual, UnresolvedGenotype,
 } from "../individual";
 import { IndividualDefaults } from "../individual_defaults";
 import { Resolved } from "../../util";
+import { SerializableObject } from "../../serialization";
 
 /**
  *
  */
-export interface BlueprintCreationSettings<G extends Genotype | Promise<Genotype>, P> extends BlueprintConstructorSettings<G, P> {
-  arg: () => any;
-  state: () => State;
+export type BlueprintGenotypeFunction<G extends UnresolvedGenotype> = (arg: any) => G;
+
+/**
+ *
+ */
+export type BlueprintPhenotypeFunction<G extends UnresolvedGenotype, P> = PhenotypeFunction<Resolved<G>, P>;
+
+/**
+ *
+ */
+export interface BlueprintConstructorSettings<G extends UnresolvedGenotype, P> {
+  genotype: BlueprintGenotypeFunction<G>;
+  phenotype?: BlueprintPhenotypeFunction<G, P>;
 }
 
 /**
  *
  */
-export interface BlueprintConstructorSettings<G extends Genotype | Promise<Genotype>, P> {
-  genotype: (arg: any) => G;
-  phenotype?: (genotype: Resolved<G>, state: State) => P;
+export interface BlueprintCreationSettings<G extends UnresolvedGenotype, P> extends Partial<BlueprintConstructorSettings<G, P>> {
+  arg?: () => any;
+  state?: () => SerializableObject;
 }
 
 /**
  *
  */
-type BlueprintSpawnOutput<G extends Genotype | Promise<Genotype>, P> = ResolvedIndividual<G, P> | Promise<ResolvedIndividual<G, P>>;
+type BlueprintSpawnOutput<G extends UnresolvedGenotype, P> = ResolvedIndividual<G, P> | Promise<ResolvedIndividual<G, P>>;
 
 /**
  *
  */
-export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends IndividualDefaults<Resolved<G>, P> {
+export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaults<Resolved<G>, P> {
   /**
    *
    */
-  public readonly genotypeFunc: (arg: any) => G;
+  public readonly genotypeFunc: BlueprintGenotypeFunction<G>;
 
   /**
    *
    */
-  public readonly phenotypeFunc: (genotype: Resolved<G>, state: any) => P;
+  public readonly phenotypeFunc: BlueprintPhenotypeFunction<G, P>;
 
   /**
    *
@@ -66,29 +76,31 @@ export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends Indivi
   public constructor(settings: BlueprintConstructorSettings<G, P>) {
     super();
 
+    const defaultPhenotypeFunc = () => undefined as unknown as P;
+
     this.genotypeFunc = settings.genotype;
-    this.phenotypeFunc = settings.phenotype ?? (() => (undefined as unknown as P));
+    this.phenotypeFunc = settings.phenotype ?? defaultPhenotypeFunc;
   }
 
   /**
    *
    */
   public spawn(
-    settings: Partial<BlueprintCreationSettings<G, P>> = {},
+    settings: BlueprintCreationSettings<G, P> = {},
   ): BlueprintSpawnOutput<G, P> {
     const arg = settings.arg ? settings.arg() : undefined;
-    const genotype = settings.genotype === undefined
-      ? this.genotypeFunc(arg)
-      : settings.genotype(arg);
+    const genotype = settings.genotype
+      ? settings.genotype(arg)
+      : this.genotypeFunc(arg);
 
     if (genotype instanceof Promise) {
-      return genotype.then(data => {
-        return this.spawn({ ...settings, genotype: () => data });
+      return genotype.then(resolvedGenotype => {
+        return this.spawn({ ...settings, genotype: () => resolvedGenotype });
       });
     }
 
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
-    const state: State | undefined = settings.state
+    const state: SerializableObject | undefined = settings.state
       ? settings.state()
       : undefined;
 
@@ -109,15 +121,16 @@ export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends Indivi
    */
   public create(
     amount: number,
-    settings: Partial<BlueprintCreationSettings<G, P>> = {},
+    settings?: BlueprintCreationSettings<G, P>,
   ): BlueprintSpawnOutput<G, P>[] {
     const individuals: BlueprintSpawnOutput<G, P>[] = new Array(amount);
     let async = false;
 
     for (let i = 0; i < amount; i++) {
-      individuals[i] = this.spawn(settings);
+      const spawn = this.spawn(settings);
+      individuals[i] = spawn;
 
-      if (!async && individuals[i] instanceof Promise) {
+      if (!async && spawn instanceof Promise) {
         async = true;
       }
     }
@@ -138,7 +151,7 @@ export class Blueprint<G extends Genotype | Promise<Genotype>, P> extends Indivi
     serialized: SerializedIndividual,
     settings: IndividualDeserializationSettings<Resolved<G>, P>,
   ): ResolvedIndividual<G, P> {
-    settings.phenotype = settings.phenotype ? settings.phenotype : this.phenotypeFunc;
+    settings.phenotype = settings.phenotype ?? this.phenotypeFunc;
 
     const individual = Individual.deserialize(serialized, settings);
     this.applyDefaults(individual);

@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { Serializable, SerializableValue } from "../serialization";
+import { deserialize, Serializable, SerializableValue, serialize } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { Genotype } from "../individual/data";
 import { MutationMethod } from "../operators/mutation";
@@ -24,6 +24,16 @@ import { MutationMethod } from "../operators/mutation";
  *
  */
 export type ListGenerateFunction<T> = (i: number) => T;
+
+/**
+ *
+ */
+export type ListSerializeFunction<T> = (data: T[]) => SerializableValue[];
+
+/**
+ *
+ */
+export type ListDeserializeFunction<T> = (data: Serializable[]) => T[];
 
 /**
  *
@@ -49,9 +59,28 @@ export class List<T> implements Genotype<T[]> {
    * @param serialized
    * @param func
    */
-  public static deserialize<T = Serializable>(serialized: Serializable[], func?: (serialized: Serializable[]) => T[]): List<T> {
-    const data = func ? func(serialized) : serialized;
+  public static deserialize<T = Serializable>(
+    serialized: Serializable[],
+    func?: ListDeserializeFunction<T>,
+  ): List<T> {
+    const deserializedData = deserialize(serialized);
+    const data = func
+      ? func(deserializedData)
+      : deserializedData;
+
     return new List(data as T[]);
+  }
+
+  /**
+   *
+   * @param data
+   * @param func
+   */
+  public static fromJSON<T = Serializable>(
+    data: string,
+    func?: ListDeserializeFunction<T>,
+  ): List<T> {
+    return List.deserialize(JSON.parse(data), func);
   }
 
   /**
@@ -90,36 +119,47 @@ export class List<T> implements Genotype<T[]> {
       throw new TypeError();
     }
 
-    this._genes = (func(this.data()) ?? this.data()) as T[];
+    const data = func(this.data());
+
+    if (data === undefined) {
+      return;
+    }
+
+    if (!Array.isArray(data)) {
+      throw new TypeError();
+    }
+
+    this._genes = data;
   }
 
   /**
    *
    */
   public clone(func?: (data: T[]) => T[]): List<T> {
-    const data = this.data().slice();
-    const newData = func ? func(data) : data;
+    const data = func
+      ? func(this.data())
+      : this.data();
 
-    return new List(newData);
+    return new List(data);
   }
 
   /**
    *
    * @param func
    */
-  public serialize(func?: (data: T[]) => SerializableValue[]): SerializableValue[] {
-    if (func) {
-      return func(this.data());
-    }
+  public serialize(func?: ListSerializeFunction<T>): SerializableValue[] {
+    const data = func
+      ? func(this.data())
+      : this.data();
 
-    return this.data() as unknown as SerializableValue[];
+    return serialize(data);
   }
 
   /**
    *
    * @param func
    */
-  public toJSON(func?: (data: T[]) => SerializableValue[]): string {
+  public toJSON(func?: ListSerializeFunction<T>): string {
     return JSON.stringify(this.serialize(func));
   }
 

@@ -16,9 +16,9 @@
  */
 
 import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
-import { Genotype, GenotypeData, State } from "./data";
+import { Genotype, GenotypeData } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
-import { deepClone, id, Resolved, toArray } from "../util";
+import { deepClone, Resolved, toArray } from "../util";
 import { deserialize, isSerializable, Serializable, SerializableObject, serialize } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { IndividualDefaults, Default } from "./individual_defaults";
@@ -27,10 +27,15 @@ import { MutationMethod } from "../operators/mutation";
 /**
  *
  */
+export type PhenotypeFunction<G extends Genotype, P> = (genotype: G, state: any) => P;
+
+/**
+ *
+ */
 export interface IndividualConstructorSettings<G extends Genotype, P> {
   genotype: G;
-  phenotype?: (genotype: G, state: any) => P;
-  state?: State;
+  phenotype?: PhenotypeFunction<G, P>;
+  state?: SerializableObject;
 }
 
 /**
@@ -46,7 +51,7 @@ export interface IndividualCloneSettings<G extends Genotype, P> {
  */
 export interface SerializedIndividual {
   genotype: Serializable;
-  state: State;
+  state: SerializableObject;
   objectives: SerializedObjective[];
 }
 
@@ -57,7 +62,6 @@ export interface IndividualSerializationSettings<G extends Genotype, P> {
   genotype?: (data: GenotypeData<G>) => Serializable;
   state?: (state: any) => SerializableObject;
   check?: boolean;
-  deepClone?: boolean;
 }
 
 /**
@@ -66,13 +70,18 @@ export interface IndividualSerializationSettings<G extends Genotype, P> {
 export interface IndividualDeserializationSettings<G extends Genotype, P> {
   genotype: (data: any) => G;
   phenotype?: (genotype: G, state: any) => P;
-  state?: (data: SerializableObject) => State;
+  state?: (data: SerializableObject) => SerializableObject;
 }
 
 /**
  *
  */
-export type ResolvedIndividual<G extends Genotype | Promise<Genotype>, P> = Individual<Resolved<G>, P>;
+export type UnresolvedGenotype = Genotype | Promise<Genotype>;
+
+/**
+ *
+ */
+export type ResolvedIndividual<G extends UnresolvedGenotype, P> = Individual<Resolved<G>, P>;
 
 /**
  *
@@ -92,17 +101,18 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
     serialized: SerializedIndividual,
     settings: IndividualDeserializationSettings<G, P>,
   ): Individual<G, P> {
-    serialized = deserialize(serialized);
+    const deserialized = deserialize(serialized) as SerializedIndividual;
 
-    const genotype = settings.genotype(serialized.genotype);
+    const genotype = settings.genotype(deserialized.genotype);
     const phenotype = settings.phenotype;
 
-    const stateFunc = settings.state ?? id;
-    const state = deserialize(serialize(stateFunc(serialized.state)));
+    const state = settings.state
+      ? settings.state(deserialized.state)
+      : deserialized.state;
 
     const individual = new Individual({ genotype, phenotype, state });
 
-    const objectives = serialized.objectives.map(Objective.deserialize);
+    const objectives = deserialized.objectives.map(Objective.deserialize);
     individual.setObjectives(objectives);
 
     return individual;
@@ -123,7 +133,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
   /**
    *
    */
-  public readonly phenotypeFunc: (genotype: G, state: any) => P;
+  public readonly phenotypeFunc: PhenotypeFunction<G, P>;
 
   /**
    *
@@ -138,7 +148,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
   /**
    *
    */
-  public readonly state: State;
+  public readonly state: SerializableObject;
 
   /**
    *
@@ -236,9 +246,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = this.phenotypeFunc;
-
-    const stateFunc = settings.state ?? id;
-    const state = deepClone(stateFunc(this.state));
+    const state = deepClone(settings.state ? settings.state(this.state) : this.state);
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(this.objectives().map(objective => objective.clone()));
@@ -283,13 +291,14 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
   ): SerializedIndividual {
     const check = settings.check ?? true;
     const genotype = this.genotype.serialize(settings.genotype);
-    const stateFunc = settings.state ?? id;
 
-    if (typeof stateFunc !== "function") {
+    if (settings.state !== undefined && typeof settings.state !== "function") {
       throw new TypeError();
     }
 
-    const state = deepClone(stateFunc(this.state) as State);
+    const state = settings.state
+      ? settings.state(this.state)
+      : this.state;
 
     if (check) {
       if (!isSerializable(genotype)) {
@@ -307,7 +316,7 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
 
     const objectives = this.objectives().map(objective => objective.serialize());
 
-    return { genotype, state, objectives };
+    return serialize({ genotype, state, objectives });
   }
 
   /**
@@ -331,15 +340,16 @@ export class Individual<G extends Genotype, P> extends IndividualDefaults<G, P> 
     method: CrossoverMethod<GenotypeData<G>> = this.getDefault(Default.Crossover),
     settings: Partial<IndividualConstructorSettings<G, P>> = {},
   ): Individual<G, P>[] {
+    const phenotype = settings.phenotype ?? this.phenotypeFunc;
+
     if (typeof method !== "function") {
       throw new TypeError();
     }
 
-    const genotypes = partners.map(partner => partner.genotype);
-    const children = this.genotype.offspring(genotypes, method) as G[];
+    const partnerGenotypes = partners.map(partner => partner.genotype);
+    const childrenGenotypes = this.genotype.offspring(partnerGenotypes, method) as G[];
 
-    return children.map(genotype => {
-      const phenotype = settings.phenotype ?? this.phenotypeFunc;
+    return childrenGenotypes.map(genotype => {
       const state = settings.state;
 
       const individual = new Individual({ genotype, phenotype, state });

@@ -26,7 +26,9 @@ export type SerializableValue = number | string | boolean;
  * @hidden
  */
 export type SerializableObject = {
-  [key: string]: SerializableValue | SerializableObject;
+  [key: string]: SerializableValue | SerializableObject | void;
+  apply?: void;
+  call?: void;
 }
 
 /**
@@ -52,7 +54,7 @@ const NEGATIVE_INFINITY = "__NEGATIVE_INFINITY__";
  */
 export function serialize(data: any): any {
   const override = (value: any) => {
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       return NAN;
     }
 

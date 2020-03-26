@@ -33,7 +33,7 @@ export const crossover = { point, uniform, ordered, blend, simulatedBinary };
 // individual
 export { weightedSum, ScalarizationMethod } from "./individual/multiobjective_optimization/scalarization";
 export { Objective, SerializedObjective } from "./individual/evaluation/objective";
-export { BlueprintCreationSettings, Blueprint, BlueprintConstructorSettings } from "./individual/blueprint/blueprint";
+export { BlueprintCreationSettings, Blueprint, BlueprintConstructorSettings, BlueprintPhenotypeFunction, BlueprintGenotypeFunction } from "./individual/blueprint/blueprint";
 export { AnyBlueprint, AsyncBlueprint, SyncBlueprint, ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";
 export {
   Individual,
@@ -42,7 +42,10 @@ export {
   IndividualSerializationSettings,
   SerializedIndividual,
   AnyIndividual,
-  ResolvedIndividual
+  ResolvedIndividual,
+  IndividualCloneSettings,
+  PhenotypeFunction,
+  UnresolvedGenotype,
 } from "./individual/individual";
 export { Default, DefaultsValues } from "./individual/individual_defaults";
 
@@ -52,8 +55,8 @@ export { EvaluationFunction, Evaluation } from "./individual/evaluation/evaluati
 export { nonDominatedSort, crowdingDistance, rank } from "./individual/multiobjective_optimization/multiobjective_optimization";
 
 // genotype
-export { Genotype, GenotypeData, State } from "./individual/data";
-export { List, ListGenerateFunction } from "./genotype/list";
+export { Genotype, GenotypeData } from "./individual/data";
+export { List, ListGenerateFunction, ListSerializeFunction, ListDeserializeFunction } from "./genotype/list";
 
 // group
 export { Group, GroupData, GroupCloneSettings, GroupCrowdSettings, GroupConstructorSettings } from "./individual/group";
