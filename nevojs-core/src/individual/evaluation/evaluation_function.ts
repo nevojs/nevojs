@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { Genotype } from "../data";
+import { AnyGenotype } from "../data";
 import { Individual } from "../individual";
 import { Objective } from "./objective";
 
@@ -32,4 +32,4 @@ export type Evaluation = EvaluationData | Promise<EvaluationData>;
 /**
  *
  */
-export type EvaluationFunction<G extends Genotype, P> = (individual: Individual<G, P>) => Evaluation;
+export type EvaluationFunction<G extends AnyGenotype, P> = (individual: Individual<G, P>) => Evaluation;

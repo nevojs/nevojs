@@ -18,7 +18,7 @@
 import { AnyIndividual, Individual, IndividualConstructorSettings } from "./individual/individual";
 import { Blueprint, BlueprintConstructorSettings } from "./individual/blueprint/blueprint";
 import { Group, GroupConstructorSettings } from "./individual/group";
-import { Genotype } from "./individual/data";
+import { AnyGenotype, UnresolvedGenotype } from "./individual/data";
 import { List } from "./genotype/list";
 import { Objective } from "./individual/evaluation/objective";
 import { ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";
@@ -28,7 +28,7 @@ import { ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";
  * @param settings
  * @category creation
  */
-export function individual<G extends Genotype, P>(
+export function individual<G extends AnyGenotype, P>(
   settings: IndividualConstructorSettings<G, P>,
 ): Individual<G, P> {
   return new Individual(settings);
@@ -39,7 +39,7 @@ export function individual<G extends Genotype, P>(
  * @param settings
  * @category creation
  */
-export function blueprint<G extends Genotype | Promise<Genotype>, P>(
+export function blueprint<G extends UnresolvedGenotype, P>(
   settings: BlueprintConstructorSettings<G, P>,
 ): ResolvedBlueprint<G, P> {
   return new Blueprint(settings) as any;

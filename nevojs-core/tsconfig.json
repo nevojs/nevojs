@@ -8,6 +8,7 @@
     "noImplicitReturns": true,
     "emitDecoratorMetadata": false,
     "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
     "noUnusedLocals": true,
     "declaration": true,
     "declarationMap": true,

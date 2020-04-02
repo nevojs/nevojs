@@ -20,7 +20,7 @@ import { inspectObjectRecursively, mapObjectValuesRecursively } from "./util";
 /**
  * @hidden
  */
-export type SerializableValue = number | string | boolean;
+export type SerializableValue = number | string | boolean | SerializableValue[];
 
 /**
  * @hidden
@@ -34,7 +34,7 @@ export type SerializableObject = {
 /**
  * @hidden
  */
-export type Serializable = SerializableObject | SerializableValue | SerializableValue[] | SerializableObject[];
+export type Serializable = SerializableObject | SerializableValue | SerializableObject[] | Serializable[];
 
 /**
  * @hidden

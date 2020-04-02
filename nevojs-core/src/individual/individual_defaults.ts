@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { Genotype, GenotypeData } from "./data";
+import { AnyGenotype, GenotypeData } from "./data";
 import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { Individual } from "./individual";
@@ -33,7 +33,7 @@ export enum Default {
 /**
  *
  */
-export type DefaultsValues<G extends Genotype, P> = {
+export type DefaultsValues<G extends AnyGenotype, P> = {
   [Default.Evaluation]: EvaluationFunction<G, P>;
   [Default.Mutation]: MutationMethod<GenotypeData<G>>;
   [Default.Crossover]: CrossoverMethod<GenotypeData<G>>;
@@ -45,8 +45,8 @@ type DefaultKey = Default | (Default[keyof Default] & string);
 /**
  *
  */
-export abstract class IndividualDefaults<G extends Genotype, P> {
-  protected data: Partial<DefaultsValues<G, P>> = {};
+export abstract class IndividualDefaults<G extends AnyGenotype, P> {
+  protected defaultValues: Partial<DefaultsValues<G, P>> = {};
 
   /**
    *
@@ -57,7 +57,7 @@ export abstract class IndividualDefaults<G extends Genotype, P> {
     field: T,
     data: DefaultsValues<G, P>[T],
   ): void {
-    this.data[field] = data;
+    this.defaultValues[field] = data;
   }
 
   /**
@@ -65,7 +65,7 @@ export abstract class IndividualDefaults<G extends Genotype, P> {
    * @param field
    */
   public hasDefault(field: Default): boolean {
-    return this.data[field] !== undefined;
+    return this.defaultValues[field] !== undefined;
   }
 
   /**
@@ -73,7 +73,7 @@ export abstract class IndividualDefaults<G extends Genotype, P> {
    * @param field
    */
   public getDefault<T extends DefaultKey>(field: T): DefaultsValues<G, P>[T] {
-    return this.data[field] as DefaultsValues<G, P>[T];
+    return this.defaultValues[field] as DefaultsValues<G, P>[T];
   }
 
   /**

@@ -18,11 +18,13 @@
 import {
   Individual,
   IndividualDeserializationSettings, PhenotypeFunction, ResolvedIndividual,
-  SerializedIndividual, UnresolvedGenotype,
+  SerializedIndividual,
 } from "../individual";
 import { IndividualDefaults } from "../individual_defaults";
 import { Resolved } from "../../util";
 import { SerializableObject } from "../../serialization";
+import { State } from "../state";
+import { UnresolvedGenotype } from "../data";
 
 /**
  *
@@ -100,9 +102,9 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
     }
 
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
-    const state: SerializableObject | undefined = settings.state
+    const state: State<any> = new State(settings.state
       ? settings.state()
-      : undefined;
+      : {});
 
     const individual = new Individual({
       genotype: genotype as Resolved<G>,
@@ -122,6 +124,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
   public create(
     amount: number,
     settings?: BlueprintCreationSettings<G, P>,
+    check: boolean = true,
   ): BlueprintSpawnOutput<G, P>[] {
     const individuals: BlueprintSpawnOutput<G, P>[] = new Array(amount);
     let async = false;
@@ -130,7 +133,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
       const spawn = this.spawn(settings);
       individuals[i] = spawn;
 
-      if (!async && spawn instanceof Promise) {
+      if (check && !async && spawn instanceof Promise) {
         async = true;
       }
     }

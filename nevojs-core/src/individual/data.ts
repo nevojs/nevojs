@@ -17,20 +17,31 @@
 
 import { CrossoverMethod } from "../operators/crossover";
 import { MutationMethod } from "../operators/mutation";
+import { Serializable } from "../serialization";
 
 /**
  *
  */
-export interface Genotype<D = any> {
+export interface Genotype<D> {
   mutate(method: MutationMethod<D>): void;
   clone(func?: (data: D) => D): Genotype<D>;
-  serialize(func?: (data: D) => any): any;
-  toJSON(func?: (data: D) => any): string;
+  serialize(func?: (data: D) => Serializable): any;
+  toJSON(func?: (data: D) => Serializable): string;
   data(): D;
-  offspring(partners: unknown[], method: CrossoverMethod<D>): any[];
+  offspring(partners: unknown[], method: CrossoverMethod<D>): Genotype<D>[];
 }
 
 /**
  *
  */
-export type GenotypeData<G extends Genotype> = G extends Genotype<infer D> ? D : never;
+export type AnyGenotype = Genotype<any>;
+
+/**
+ *
+ */
+export type GenotypeData<G extends AnyGenotype> = G extends Genotype<infer D> ? D : never;
+
+/**
+ *
+ */
+export type UnresolvedGenotype = AnyGenotype | Promise<AnyGenotype>;

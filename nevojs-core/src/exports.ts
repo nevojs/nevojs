@@ -45,9 +45,9 @@ export {
   ResolvedIndividual,
   IndividualCloneSettings,
   PhenotypeFunction,
-  UnresolvedGenotype,
 } from "./individual/individual";
 export { Default, DefaultsValues } from "./individual/individual_defaults";
+export { State } from "./individual/state";
 
 export { EvaluationFunction, Evaluation } from "./individual/evaluation/evaluation_function";
 
@@ -55,7 +55,7 @@ export { EvaluationFunction, Evaluation } from "./individual/evaluation/evaluati
 export { nonDominatedSort, crowdingDistance, rank } from "./individual/multiobjective_optimization/multiobjective_optimization";
 
 // genotype
-export { Genotype, GenotypeData } from "./individual/data";
+export { Genotype, GenotypeData, AnyGenotype, UnresolvedGenotype } from "./individual/data";
 export { List, ListGenerateFunction, ListSerializeFunction, ListDeserializeFunction } from "./genotype/list";
 
 // group

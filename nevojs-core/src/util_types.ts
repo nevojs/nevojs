@@ -97,6 +97,8 @@ export type AsyncBlueprintFrom<I extends AnyIndividual> = AsyncBlueprint<Genotyp
  */
 export type IndividualFrom<X> =
   X extends Blueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
+  X extends SyncBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
+  X extends AsyncBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
   X extends Group<infer I>
     ? I
     : never;

@@ -15,10 +15,10 @@
  * =============================================================================
  */
 
-import { deserialize, Serializable, SerializableValue, serialize } from "../serialization";
+import { deserialize, Serializable } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
-import { Genotype } from "../individual/data";
 import { MutationMethod } from "../operators/mutation";
+import { AbstractGenotype, GenotypeSerializeFunction } from "./abstract_genotype";
 
 /**
  *
@@ -28,7 +28,7 @@ export type ListGenerateFunction<T> = (i: number) => T;
 /**
  *
  */
-export type ListSerializeFunction<T> = (data: T[]) => SerializableValue[];
+export type ListSerializeFunction<T> = (data: T[]) => Serializable[];
 
 /**
  *
@@ -38,7 +38,7 @@ export type ListDeserializeFunction<T> = (data: Serializable[]) => T[];
 /**
  *
  */
-export class List<T> implements Genotype<T[]> {
+export class List<T> extends AbstractGenotype<T[]> {
   /**
    * @static
    * @param size
@@ -86,50 +86,35 @@ export class List<T> implements Genotype<T[]> {
   /**
    *
    */
-  private _genes: T[];
-
-  /**
-   *
-   */
   public get length(): number {
-    return this._genes.length;
+    return this.data().length;
   }
 
   /**
    *
-   * @param genes
+   * @param data
    */
-  public constructor(genes: T[]) {
-    this._genes = genes;
+  public constructor(data: T[]) {
+    super(data);
   }
 
   /**
    *
    */
   public data(): T[] {
-    return this._genes.slice();
+    return super.data().slice();
   }
 
   /**
    *
-   * @param func
+   * @param method
    */
-  public mutate(func: MutationMethod<T[]>): void {
-    if (typeof func !== "function") {
+  public mutate(method: MutationMethod<T[]>): void {
+    super.mutate(method);
+
+    if (!Array.isArray(this.data())) {
       throw new TypeError();
     }
-
-    const data = func(this.data());
-
-    if (data === undefined) {
-      return;
-    }
-
-    if (!Array.isArray(data)) {
-      throw new TypeError();
-    }
-
-    this._genes = data;
   }
 
   /**
@@ -145,14 +130,19 @@ export class List<T> implements Genotype<T[]> {
 
   /**
    *
+   * @param partners
+   * @param method
+   */
+  public offspring(partners: List<T>[], method: CrossoverMethod<T[]>): List<T>[] {
+    return super.makeOffspring(partners, method, data => new List(data));
+  }
+
+  /**
+   *
    * @param func
    */
-  public serialize(func?: ListSerializeFunction<T>): SerializableValue[] {
-    const data = func
-      ? func(this.data())
-      : this.data();
-
-    return serialize(data);
+  public serialize(func?: ListSerializeFunction<T>): Serializable[] {
+    return super.serialize(func as GenotypeSerializeFunction<T[]>) as Serializable[];
   }
 
   /**
@@ -161,15 +151,5 @@ export class List<T> implements Genotype<T[]> {
    */
   public toJSON(func?: ListSerializeFunction<T>): string {
     return JSON.stringify(this.serialize(func));
-  }
-
-  /**
-   *
-   * @param partners
-   * @param method
-   */
-  public offspring(partners: List<T>[], method: CrossoverMethod<T[]>): List<T>[] {
-    const members = [this, ...partners];
-    return method(members.map(list => list.data())).map(genes => new List(genes));
   }
 }

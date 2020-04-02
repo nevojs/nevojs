@@ -112,10 +112,12 @@ export function bound(
   }
 
   return gene => {
-    const value = (func(gene) ?? gene) as number;
+    let value = func(gene) ?? gene;
+    value = Math.max(value, min);
+    value = Math.min(value, max);
 
-    return Math.min(Math.max(value, min), max);
-  }
+    return value;
+  };
 }
 
 /**

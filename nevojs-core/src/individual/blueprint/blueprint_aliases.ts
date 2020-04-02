@@ -16,17 +16,17 @@
  */
 
 import { Blueprint, BlueprintCreationSettings } from "./blueprint";
-import { Genotype } from "../data";
+import { AnyGenotype, UnresolvedGenotype } from "../data";
 import { Individual } from "../individual";
 import { Resolved } from "../../util";
 
 type BlueprintCreationMethod = "spawn" | "create";
-type UnresolvedBlueprint<G extends Genotype, P> = Omit<Blueprint<G, P>, BlueprintCreationMethod>;
+type UnresolvedBlueprint<G extends AnyGenotype, P> = Omit<Blueprint<G, P>, BlueprintCreationMethod>;
 
 /**
  *
  */
-export type SyncBlueprint<G extends Genotype, P> = UnresolvedBlueprint<G, P> & {
+export type SyncBlueprint<G extends AnyGenotype, P> = UnresolvedBlueprint<G, P> & {
   spawn: (settings?: Partial<BlueprintCreationSettings<G, P>>) => Individual<G, P>;
   create: (amount: number, settings?: Partial<BlueprintCreationSettings<G, P>>) => Individual<G, P>[];
 };
@@ -34,7 +34,7 @@ export type SyncBlueprint<G extends Genotype, P> = UnresolvedBlueprint<G, P> & {
 /**
  *
  */
-export type AsyncBlueprint<G extends Genotype, P> = UnresolvedBlueprint<G, P> & {
+export type AsyncBlueprint<G extends AnyGenotype, P> = UnresolvedBlueprint<G, P> & {
   spawn: (settings?: Partial<BlueprintCreationSettings<G, P>>) => Promise<Individual<G, P>>;
   create: (amount: number, settings?: Partial<BlueprintCreationSettings<G, P>>) => Promise<Individual<G, P>[]>;
 };
@@ -42,7 +42,7 @@ export type AsyncBlueprint<G extends Genotype, P> = UnresolvedBlueprint<G, P> & 
 /**
  *
  */
-export type AnyBlueprint<G extends Genotype, P> = UnresolvedBlueprint<G, P> & {
+export type AnyBlueprint<G extends AnyGenotype, P> = UnresolvedBlueprint<G, P> & {
   spawn: SyncBlueprint<G, P>["spawn"] | AsyncBlueprint<G, P>["spawn"];
   create: SyncBlueprint<G, P>["create"] | AsyncBlueprint<G, P>["create"];
 }
@@ -50,6 +50,6 @@ export type AnyBlueprint<G extends Genotype, P> = UnresolvedBlueprint<G, P> & {
 /**
  *
  */
-export type ResolvedBlueprint<G extends Genotype | Promise<Genotype>, P> = G extends Promise<any>
+export type ResolvedBlueprint<G extends UnresolvedGenotype, P> = G extends Promise<any>
   ? AsyncBlueprint<Resolved<G>, P>
   : SyncBlueprint<Resolved<G>, P>;
