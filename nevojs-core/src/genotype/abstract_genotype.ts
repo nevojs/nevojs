@@ -58,6 +58,20 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
     return JSON.stringify(this.serialize(func));
   }
 
+  public crossover(
+    amount: number,
+    partners: Genotype<T>[],
+    method: CrossoverMethod<T>
+  ): Genotype<T>[] {
+    const children: Genotype<T>[] = [];
+
+    while (amount > children.length) {
+      children.push(...this.offspring(partners, method));
+    }
+
+    return children.slice(0, amount);
+  }
+
   public abstract offspring(
     partners: Genotype<T>[],
     method: CrossoverMethod<T>,
