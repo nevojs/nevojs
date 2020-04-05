@@ -97,6 +97,8 @@ describe("List", () => {
         data.forEach(gene => {
           gene.value += 1;
         });
+
+        return null;
       };
 
       const list = new List([
