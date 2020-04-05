@@ -102,8 +102,6 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
     const genotype = settings.genotype(deserialized.genotype);
     const phenotype = settings.phenotype;
 
-    console.log(deserialized.state);
-
     const state = new State(settings.state
       ? settings.state(deserialized.state)
       : deserialized.state);
