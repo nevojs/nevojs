@@ -240,14 +240,8 @@ export class Group<I extends AnyIndividual> {
     method?: CrossoverMethod<$Data<$Genotype<I>>>,
     settings?: Partial<IndividualConstructorSettings<$Genotype<I>, $Phenotype<I>>>,
   ): I[] {
-    const [a, ...partners] = this.members();
-    const children: I[] = [];
-
-    while (amount > children.length) {
-      children.push(...a.crossover(amount, partners, method as any, settings) as I[]);
-    }
-
-    return children;
+    const [parent, ...partners] = this.members();
+    return parent.crossover(amount, partners, method as any, settings) as I[];
   }
 
   /**
