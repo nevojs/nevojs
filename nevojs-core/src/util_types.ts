@@ -30,7 +30,7 @@ import { Resolved } from "./util";
  */
 export type GenotypeOf<X> =
   X extends Individual<infer G, any> ? G :
-  X extends Blueprint<infer G, any> ? G :
+  X extends AnyBlueprint<infer G, any> ? G :
   X extends Group<infer I>
     ? I extends Individual<infer G, any> ? G : never
     : never;
@@ -40,7 +40,7 @@ export type GenotypeOf<X> =
  */
 export type PhenotypeOf<X> =
   X extends Individual<any, infer P> ? P :
-  X extends Blueprint<any, infer P> ? P :
+  X extends AnyBlueprint<any, infer P> ? P :
   X extends Group<infer I>
     ? I extends Individual<any, infer P> ? P : never
     : never;
@@ -72,7 +72,7 @@ export type MutationMethodFor<X> =
 export type CrossoverMethodFor<X> =
   X extends Individual<infer G, any> ? CrossoverMethod<GenotypeData<G>> :
   X extends Genotype<infer D> ? CrossoverMethod<D> :
-  X extends Blueprint<infer G, any> ? CrossoverMethod<GenotypeData<Resolved<G>>> :
+  X extends AnyBlueprint<infer G, any> ? CrossoverMethod<GenotypeData<Resolved<G>>> :
   X extends Group<infer I>
     ? I extends Individual<infer G, any> ? CrossoverMethod<GenotypeData<G>> : never
     : never;
@@ -97,8 +97,7 @@ export type AsyncBlueprintFrom<I extends AnyIndividual> = AsyncBlueprint<Genotyp
  */
 export type IndividualFrom<X> =
   X extends Blueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
-  X extends SyncBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
-  X extends AsyncBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
+  X extends AnyBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
   X extends Group<infer I>
     ? I
     : never;
@@ -108,6 +107,6 @@ export type IndividualFrom<X> =
  */
 export type GroupFrom<X> =
   X extends Individual<infer G, infer P> ? Group<Individual<Resolved<G>, P>> :
-  X extends Blueprint<infer G, infer P>
+  X extends AnyBlueprint<infer G, infer P>
     ? Group<Individual<Resolved<G>, P>>
     : never;
