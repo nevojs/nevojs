@@ -28,7 +28,7 @@ import { Resolved } from "./util";
 /**
  *
  */
-export type GenotypeOf<X> =
+export type $Genotype<X> =
   X extends Individual<infer G, any> ? G :
   X extends AnyBlueprint<infer G, any> ? G :
   X extends Group<infer I>
@@ -38,7 +38,7 @@ export type GenotypeOf<X> =
 /**
  *
  */
-export type PhenotypeOf<X> =
+export type $Phenotype<X> =
   X extends Individual<any, infer P> ? P :
   X extends AnyBlueprint<any, infer P> ? P :
   X extends Group<infer I>
@@ -48,7 +48,7 @@ export type PhenotypeOf<X> =
 /**
  *
  */
-export type EvaluationFunctionFor<X> =
+export type $Evaluation<X> =
   X extends Individual<infer G, infer P> ? EvaluationFunction<G, P> :
   X extends AnyBlueprint<infer G, infer P> ? EvaluationFunction<Resolved<G>, P> :
   X extends Group<infer I>
@@ -58,7 +58,7 @@ export type EvaluationFunctionFor<X> =
 /**
  *
  */
-export type MutationMethodFor<X> =
+export type $Mutation<X> =
   X extends Individual<infer G, any> ? MutationMethod<GenotypeData<G>> :
   X extends Genotype<infer D> ? MutationMethod<D> :
   X extends AnyBlueprint<infer G, any> ? MutationMethod<GenotypeData<Resolved<G>>> :
@@ -69,7 +69,7 @@ export type MutationMethodFor<X> =
 /**
  *
  */
-export type CrossoverMethodFor<X> =
+export type $Crossover<X> =
   X extends Individual<infer G, any> ? CrossoverMethod<GenotypeData<G>> :
   X extends Genotype<infer D> ? CrossoverMethod<D> :
   X extends AnyBlueprint<infer G, any> ? CrossoverMethod<GenotypeData<Resolved<G>>> :
@@ -80,22 +80,22 @@ export type CrossoverMethodFor<X> =
 /**
  *
  */
-export type BlueprintFrom<I extends AnyIndividual> = Blueprint<GenotypeOf<I>, PhenotypeOf<I>>;
+export type $Blueprint<I extends AnyIndividual> = Blueprint<$Genotype<I>, $Phenotype<I>>;
 
 /**
  *
  */
-export type SyncBlueprintFrom<I extends AnyIndividual> = SyncBlueprint<GenotypeOf<I>, PhenotypeOf<I>>;
+export type $SyncBlueprint<I extends AnyIndividual> = SyncBlueprint<$Genotype<I>, $Phenotype<I>>;
 
 /**
  *
  */
-export type AsyncBlueprintFrom<I extends AnyIndividual> = AsyncBlueprint<GenotypeOf<I>, PhenotypeOf<I>>;
+export type $AsyncBlueprint<I extends AnyIndividual> = AsyncBlueprint<$Genotype<I>, $Phenotype<I>>;
 
 /**
  *
  */
-export type IndividualFrom<X> =
+export type $Individual<X> =
   X extends Blueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
   X extends AnyBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
   X extends Group<infer I>
@@ -105,7 +105,7 @@ export type IndividualFrom<X> =
 /**
  *
  */
-export type GroupFrom<X> =
+export type $Group<X> =
   X extends Individual<infer G, infer P> ? Group<Individual<Resolved<G>, P>> :
   X extends AnyBlueprint<infer G, infer P>
     ? Group<Individual<Resolved<G>, P>>
