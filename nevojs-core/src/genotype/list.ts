@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { deserialize, Serializable } from "../serialization";
+import { Serializable } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { MutationMethod } from "../operators/mutation";
 import { AbstractGenotype, GenotypeSerializeFunction } from "./abstract_genotype";
@@ -51,36 +51,7 @@ export class List<T> extends AbstractGenotype<T[]> {
       genes[i] = func(i);
     }
 
-    return new List<T>(genes);
-  }
-
-  /**
-   *
-   * @param serialized
-   * @param func
-   */
-  public static deserialize<T = Serializable>(
-    serialized: Serializable[],
-    func?: ListDeserializeFunction<T>,
-  ): List<T> {
-    const deserializedData = deserialize(serialized);
-    const data = func
-      ? func(deserializedData)
-      : deserializedData;
-
-    return new List(data as T[]);
-  }
-
-  /**
-   *
-   * @param data
-   * @param func
-   */
-  public static fromJSON<T = Serializable>(
-    data: string,
-    func?: ListDeserializeFunction<T>,
-  ): List<T> {
-    return List.deserialize(JSON.parse(data), func);
+    return new List<T>(genes) as any;
   }
 
   /**
