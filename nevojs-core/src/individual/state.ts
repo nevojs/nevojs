@@ -1,18 +1,10 @@
-import { deserialize, serialize, SerializableObject } from "../serialization";
+import { serialize, SerializableObject } from "../serialization";
 
 type StateData<T extends SerializableObject> = {
   [K in keyof T]: () => T[K];
 }
 
 export class State<T extends SerializableObject> {
-  public static deserialize<T extends SerializableObject>(data: T): State<T> {
-    return new State(deserialize(data) as T);
-  }
-
-  public static fromJSON<T extends SerializableObject>(data: string): State<T> {
-    return State.deserialize(JSON.parse(data) as T);
-  }
-
   private bindings: Partial<StateData<T>> = {};
 
   public constructor(public readonly data: T) {}
