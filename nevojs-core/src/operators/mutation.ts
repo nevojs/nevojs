@@ -25,7 +25,7 @@ export type PureMutationMethod<D> = (data: D) => D;
 /**
  *
  */
-export type ImpureMutationMethod<D> = (data: D) => void;
+export type ImpureMutationMethod<D> = (data: D) => null;
 
 /**
  *
@@ -38,8 +38,8 @@ export type MutationMethod<D> = PureMutationMethod<D> | ImpureMutationMethod<D>;
 export type MutationMapFunction<T, U = T> = (value: T, i: number, arr: T[]) => U;
 
 /**
-*
-*/
+ *
+ */
 export interface MutationMapSettings<T> {
   rate?: number | MutationMapFunction<T, number>;
 }
@@ -49,7 +49,7 @@ export interface MutationMapSettings<T> {
  * @param func
  * @param settings
  */
-export function map<T, U extends T | void = T>(
+export function map<T, U extends T | null = T>(
   func: MutationMapFunction<T, U>,
   settings: MutationMapSettings<T> = {},
 ): U extends T ? PureMutationMethod<T[]> : ImpureMutationMethod<T[]> {
