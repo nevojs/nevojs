@@ -28,7 +28,7 @@ export interface Genotype<D> {
   serialize(func?: (data: D) => Serializable): any;
   toJSON(func?: (data: D) => Serializable): string;
   data(): D;
-  offspring(partners: unknown[], method: CrossoverMethod<D>): Genotype<D>[];
+  offspring(partners: Genotype<D>[], method: CrossoverMethod<D>): Genotype<D>[];
 }
 
 /**
