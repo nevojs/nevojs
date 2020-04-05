@@ -124,7 +124,6 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
   public create(
     amount: number,
     settings?: BlueprintCreationSettings<G, P>,
-    check: boolean = true,
   ): BlueprintSpawnOutput<G, P>[] {
     const individuals: BlueprintSpawnOutput<G, P>[] = new Array(amount);
     let async = false;
@@ -133,7 +132,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
       const spawn = this.spawn(settings);
       individuals[i] = spawn;
 
-      if (check && !async && spawn instanceof Promise) {
+      if (!async && spawn instanceof Promise) {
         async = true;
       }
     }
