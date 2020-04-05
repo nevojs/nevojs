@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "author": "Aleksander Ciesielski",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "main": "./dist/exports.js",
   "types": "./dist/exports.d.ts",
   "scripts": {
