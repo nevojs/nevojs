@@ -16,7 +16,7 @@
  */
 
 import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
-import { AnyGenotype, GenotypeData, UnresolvedGenotype } from "./data";
+import { AnyGenotype, UnresolvedGenotype } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
 import { Resolved, toArray } from "../util";
 import { deserialize, isSerializable, Serializable, SerializableObject, serialize } from "../serialization";
@@ -24,6 +24,7 @@ import { CrossoverMethod } from "../operators/crossover";
 import { IndividualDefaults, Default } from "./individual_defaults";
 import { MutationMethod } from "../operators/mutation";
 import { State } from "./state";
+import { $Data } from "../util_types";
 
 /**
  *
@@ -43,7 +44,7 @@ export interface IndividualConstructorSettings<G extends AnyGenotype, P> {
  *
  */
 export interface IndividualCloneSettings<G extends AnyGenotype, P> {
-  genotype?: (data: GenotypeData<G>) => GenotypeData<G>;
+  genotype?: (data: $Data<G>) => $Data<G>;
   state?: (state: any) => any;
 }
 
@@ -60,7 +61,7 @@ export interface SerializedIndividual {
  *
  */
 export interface IndividualSerializationSettings<G extends AnyGenotype, P> {
-  genotype?: (data: GenotypeData<G>) => Serializable;
+  genotype?: (data: $Data<G>) => Serializable;
   state?: (data: any) => SerializableObject;
   check?: boolean;
 }
@@ -255,7 +256,7 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
    *
    * @param method
    */
-  public mutate(method: MutationMethod<GenotypeData<G>> = this.getDefault(Default.Mutation)): void {
+  public mutate(method: MutationMethod<$Data<G>> = this.getDefault(Default.Mutation)): void {
     if (typeof method !== "function") {
       throw new TypeError();
     }
@@ -334,7 +335,7 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
    */
   public offspring(
     partners: Individual<G, P>[],
-    method: CrossoverMethod<GenotypeData<G>> = this.getDefault(Default.Crossover),
+    method: CrossoverMethod<$Data<G>> = this.getDefault(Default.Crossover),
     settings: Partial<IndividualConstructorSettings<G, P>> = {},
   ): Individual<G, P>[] {
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
@@ -366,7 +367,7 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
   public crossover(
     amount: number,
     partners: Individual<G, P>[],
-    method?: CrossoverMethod<GenotypeData<G>>,
+    method?: CrossoverMethod<$Data<G>>,
     settings?: Partial<IndividualConstructorSettings<G, P>>,
   ): Individual<G, P>[] {
     const children: Individual<G, P>[] = [];

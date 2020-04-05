@@ -17,7 +17,7 @@
 
 import { AnyBlueprint, AsyncBlueprint, SyncBlueprint } from "./individual/blueprint/blueprint_aliases";
 import { AnyIndividual, Individual } from "./individual/individual";
-import { Genotype, GenotypeData } from "./individual/data";
+import { Genotype } from "./individual/data";
 import { Blueprint } from "./individual/blueprint/blueprint";
 import { CrossoverMethod } from "./operators/crossover";
 import { EvaluationFunction } from "./individual/evaluation/evaluation_function";
@@ -59,22 +59,22 @@ export type $Evaluation<X> =
  *
  */
 export type $Mutation<X> =
-  X extends Individual<infer G, any> ? MutationMethod<GenotypeData<G>> :
+  X extends Individual<infer G, any> ? MutationMethod<$Data<G>> :
   X extends Genotype<infer D> ? MutationMethod<D> :
-  X extends AnyBlueprint<infer G, any> ? MutationMethod<GenotypeData<Resolved<G>>> :
+  X extends AnyBlueprint<infer G, any> ? MutationMethod<$Data<Resolved<G>>> :
   X extends Group<infer I>
-    ? I extends Individual<infer G, any> ? MutationMethod<GenotypeData<G>> : never
+    ? I extends Individual<infer G, any> ? MutationMethod<$Data<G>> : never
     : never;
 
 /**
  *
  */
 export type $Crossover<X> =
-  X extends Individual<infer G, any> ? CrossoverMethod<GenotypeData<G>> :
+  X extends Individual<infer G, any> ? CrossoverMethod<$Data<G>> :
   X extends Genotype<infer D> ? CrossoverMethod<D> :
-  X extends AnyBlueprint<infer G, any> ? CrossoverMethod<GenotypeData<Resolved<G>>> :
+  X extends AnyBlueprint<infer G, any> ? CrossoverMethod<$Data<Resolved<G>>> :
   X extends Group<infer I>
-    ? I extends Individual<infer G, any> ? CrossoverMethod<GenotypeData<G>> : never
+    ? I extends Individual<infer G, any> ? CrossoverMethod<$Data<G>> : never
     : never;
 
 /**
@@ -110,3 +110,8 @@ export type $Group<X> =
   X extends AnyBlueprint<infer G, infer P>
     ? Group<Individual<Resolved<G>, P>>
     : never;
+
+/**
+ *
+ */
+export type $Data<X> = X extends Genotype<infer D> ? D : never;

@@ -15,11 +15,12 @@
  * =============================================================================
  */
 
-import { AnyGenotype, GenotypeData } from "./data";
+import { AnyGenotype } from "./data";
 import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { Individual } from "./individual";
 import { MutationMethod } from "../operators/mutation";
+import { $Data } from "../util_types";
 
 /**
  *
@@ -35,8 +36,8 @@ export enum Default {
  */
 export type DefaultsValues<G extends AnyGenotype, P> = {
   [Default.Evaluation]: EvaluationFunction<G, P>;
-  [Default.Mutation]: MutationMethod<GenotypeData<G>>;
-  [Default.Crossover]: CrossoverMethod<GenotypeData<G>>;
+  [Default.Mutation]: MutationMethod<$Data<G>>;
+  [Default.Crossover]: CrossoverMethod<$Data<G>>;
   [unknownDefault: string]: unknown;
 }
 

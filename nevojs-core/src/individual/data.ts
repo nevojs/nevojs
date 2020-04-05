@@ -39,9 +39,4 @@ export type AnyGenotype = Genotype<any>;
 /**
  *
  */
-export type GenotypeData<G extends AnyGenotype> = G extends Genotype<infer D> ? D : never;
-
-/**
- *
- */
 export type UnresolvedGenotype = AnyGenotype | Promise<AnyGenotype>;

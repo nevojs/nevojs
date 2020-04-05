@@ -20,11 +20,10 @@ import {
   AnyIndividual,
   Individual, IndividualConstructorSettings,
 } from "./individual";
-import { GenotypeOf, PhenotypeOf } from "../util_types";
+import { $Genotype, $Phenotype, $Data } from "../util_types";
 import { merge, pick } from "../util";
 import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
-import { GenotypeData } from "./data";
 import { MutationMethod } from "../operators/mutation";
 import { SelectionMethod } from "../operators/selection";
 
@@ -99,7 +98,7 @@ export class Group<I extends AnyIndividual> {
   /**
    *
    */
-  public evaluate(func?: EvaluationFunction<GenotypeOf<I>, PhenotypeOf<I>>): void {
+  public evaluate(func?: EvaluationFunction<$Genotype<I>, $Phenotype<I>>): void {
     this.members().forEach(member => member.evaluate(func));
   }
 
@@ -238,8 +237,8 @@ export class Group<I extends AnyIndividual> {
    */
   public crossover(
     amount: number,
-    method?: CrossoverMethod<GenotypeData<GenotypeOf<I>>>,
-    settings?: Partial<IndividualConstructorSettings<GenotypeOf<I>, PhenotypeOf<I>>>,
+    method?: CrossoverMethod<$Data<$Genotype<I>>>,
+    settings?: Partial<IndividualConstructorSettings<$Genotype<I>, $Phenotype<I>>>,
   ): I[] {
     const [a, ...partners] = this.members();
     const children: I[] = [];
@@ -257,10 +256,10 @@ export class Group<I extends AnyIndividual> {
    * @param settings
    */
   public offspring(
-    method?: CrossoverMethod<GenotypeData<GenotypeOf<I>>>,
-    settings?: Partial<IndividualConstructorSettings<GenotypeOf<I>, PhenotypeOf<I>>>,
+    method?: CrossoverMethod<$Data<$Genotype<I>>>,
+    settings?: Partial<IndividualConstructorSettings<$Genotype<I>, $Phenotype<I>>>,
   ): I[] {
-    const [parent, ...partners] = this.members() as Individual<GenotypeOf<I>, PhenotypeOf<I>>[];
+    const [parent, ...partners] = this.members() as Individual<$Genotype<I>, $Phenotype<I>>[];
     return parent.offspring(partners, method, settings) as I[];
   }
 
@@ -268,7 +267,7 @@ export class Group<I extends AnyIndividual> {
    *
    * @param method
   */
-  public child(method?: CrossoverMethod<GenotypeData<GenotypeOf<I>>>): I {
+  public child(method?: CrossoverMethod<$Data<$Genotype<I>>>): I {
     const [child] = pick(this.offspring(method), 1);
     return child;
   }
@@ -277,7 +276,7 @@ export class Group<I extends AnyIndividual> {
    *
    * @param method
    */
-  public mutate(method?: MutationMethod<GenotypeData<GenotypeOf<I>>>): void {
+  public mutate(method?: MutationMethod<$Data<$Genotype<I>>>): void {
     this.members().forEach(member => member.mutate(method as any));
   }
 
