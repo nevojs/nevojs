@@ -46,7 +46,7 @@ export function best<I extends AnyIndividual>(target: ScalarizationMethod<I> = w
  * @category selection
  */
 export function worst<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
-  return (amount, individuals) => individuals.sort((a, b) => target(a) - target(b)).slice(0, amount);
+  return best(ind => -target(ind));
 }
 
 /**
