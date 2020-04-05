@@ -61,6 +61,6 @@ export { List, ListGenerateFunction, ListSerializeFunction, ListDeserializeFunct
 // group
 export { Group, GroupData, GroupCloneSettings, GroupCrowdSettings, GroupConstructorSettings } from "./individual/group";
 
-export * as Util from "./util_types";
+export { $Evaluation, $Genotype, $AsyncBlueprint, $Blueprint, $Crossover, $Data, $Group, $Individual, $Mutation, $Phenotype, $SyncBlueprint } from "./util_types";
 
 export { list, individual, group, scale, minimize, maximize, blueprint } from "./creation";
