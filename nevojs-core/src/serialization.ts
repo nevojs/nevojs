@@ -20,7 +20,7 @@ import { inspectObjectRecursively, mapObjectValuesRecursively } from "./util";
 /**
  * @hidden
  */
-export type SerializableValue = number | string | boolean | SerializableValue[];
+export type SerializableValue = number | string | boolean | undefined | SerializableValue[];
 
 /**
  * @hidden
@@ -41,12 +41,13 @@ export type Serializable = SerializableObject | SerializableValue | Serializable
  * @param data
  */
 export function isSerializable(data: any): data is Serializable {
-  return inspectObjectRecursively(data, property => ["string", "number", "boolean"].includes(typeof property));
+  return inspectObjectRecursively(data, property => ["string", "number", "boolean", "undefined"].includes(typeof property));
 }
 
 const NAN = "__NAN__";
 const POSITIVE_INFINITY = "__POSITIVE_INFINITY__";
 const NEGATIVE_INFINITY = "__NEGATIVE_INFINITY__";
+const UNDEFINED = "__UNDEFINED__";
 
 /**
  * @hidden
@@ -64,6 +65,10 @@ export function serialize(data: any): any {
 
     if (value === Number.NEGATIVE_INFINITY) {
       return NEGATIVE_INFINITY;
+    }
+
+    if (value === undefined) {
+      return UNDEFINED;
     }
 
     return value;
@@ -88,6 +93,10 @@ export function deserialize(data: any): any {
 
     if (value === NEGATIVE_INFINITY) {
       return -Infinity;
+    }
+
+    if (value === UNDEFINED) {
+      return undefined;
     }
 
     return value;
