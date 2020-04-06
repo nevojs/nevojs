@@ -1,17 +1,6 @@
 import { Genotype } from "../individual/data";
 import { MutationMethod } from "../operators/mutation";
 import { CrossoverMethod } from "../operators/crossover";
-import { isSerializable, Serializable, serialize } from "../serialization";
-
-/**
- *
- */
-export type GenotypeSerializeFunction<T> = (data: T) => Serializable;
-
-/**
- *
- */
-export type GenotypeDeserializeFunction<T> = (data: Serializable) => T;
 
 /**
  *
@@ -38,18 +27,8 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
     this._data = newData as T;
   }
 
-  public __serialize(
-    func?: GenotypeSerializeFunction<T>,
-  ): Serializable {
-    const data = func
-      ? func(this.data())
-      : this.data();
-
-    if (!isSerializable(data)) {
-      throw new TypeError();
-    }
-
-    return serialize(data);
+  public __serialize(): unknown {
+    return this.data();
   }
 
   public crossover(

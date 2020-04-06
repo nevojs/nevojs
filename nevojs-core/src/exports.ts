@@ -56,7 +56,7 @@ export { nonDominatedSort, crowdingDistance, rank } from "./individual/multiobje
 
 // genotype
 export { Genotype, AnyGenotype, UnresolvedGenotype } from "./individual/data";
-export { List, ListGenerateFunction, ListSerializeFunction, ListDeserializeFunction } from "./genotype/list";
+export { List, ListGenerateFunction } from "./genotype/list";
 
 // group
 export { Group, GroupData, GroupCloneSettings, GroupCrowdSettings, GroupConstructorSettings } from "./individual/group";

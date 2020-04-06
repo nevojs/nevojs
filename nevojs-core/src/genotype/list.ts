@@ -15,25 +15,14 @@
  * =============================================================================
  */
 
-import { Serializable } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { MutationMethod } from "../operators/mutation";
-import { AbstractGenotype, GenotypeSerializeFunction } from "./abstract_genotype";
+import { AbstractGenotype } from "./abstract_genotype";
 
 /**
  *
  */
 export type ListGenerateFunction<T> = (i: number) => T;
-
-/**
- *
- */
-export type ListSerializeFunction<T> = (data: T[]) => Serializable[];
-
-/**
- *
- */
-export type ListDeserializeFunction<T> = (data: Serializable[]) => T[];
 
 /**
  *
@@ -110,9 +99,8 @@ export class List<T> extends AbstractGenotype<T[]> {
 
   /**
    *
-   * @param func
    */
-  public __serialize(func?: ListSerializeFunction<T>): Serializable[] {
-    return super.__serialize(func as GenotypeSerializeFunction<T[]>) as Serializable[];
+  public __serialize(): unknown[] {
+    return this.data();
   }
 }

@@ -17,7 +17,6 @@
 
 import { List } from "./list";
 import { ImpureMutationMethod, PureMutationMethod } from "../operators/mutation";
-import * as serializationUtil from "../serialization";
 
 describe("List", () => {
   describe("generate", () => {
@@ -143,15 +142,6 @@ describe("List", () => {
     it("returns the data", () => {
       const list = new List([1, 2, 3]);
       expect(list.__serialize()).toEqual([1, 2, 3]);
-    });
-
-    it("calls 'serialize' utility function to transform non-serializable values", () => {
-      const list = new List([1, 2, 3]);
-      const spy = jest.spyOn(serializationUtil, "serialize");
-      list.__serialize();
-
-      expect(spy.mock.calls.length).toBe(1);
-      spy.mockClear();
     });
   });
 });

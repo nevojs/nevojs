@@ -17,7 +17,6 @@
 
 import { CrossoverMethod } from "../operators/crossover";
 import { MutationMethod } from "../operators/mutation";
-import { Serializable } from "../serialization";
 
 /**
  *
@@ -25,7 +24,7 @@ import { Serializable } from "../serialization";
 export interface Genotype<D> {
   mutate(method: MutationMethod<D>): void;
   clone(func?: (data: D) => D): Genotype<D>;
-  __serialize(func?: (data: D) => Serializable): any;
+  __serialize(): unknown;
   data(): D;
   offspring(partners: Genotype<D>[], method: CrossoverMethod<D>): Genotype<D>[];
   crossover(amount: number, partners: Genotype<D>[], method: CrossoverMethod<D>): Genotype<D>[];
