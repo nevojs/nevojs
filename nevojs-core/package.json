@@ -4,6 +4,16 @@
   "private": false,
   "author": "Aleksander Ciesielski",
   "license": "Apache-2.0",
+  "description": "Implementation of evolutionary computation in JavaScript",
+  "keywords": ["evolutionary-computation", "genetic-algorithm", "evolutionary-algorithm", "ea", "ga"],
+  "homepage": "https://nevojs.org",
+  "issues": {
+    "url": "https://github.com/nevojs/nevojs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nevojs/nevojs.git"
+  },
   "main": "./dist/exports.js",
   "types": "./dist/exports.d.ts",
   "scripts": {
