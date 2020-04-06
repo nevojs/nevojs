@@ -115,12 +115,4 @@ export class List<T> extends AbstractGenotype<T[]> {
   public serialize(func?: ListSerializeFunction<T>): Serializable[] {
     return super.serialize(func as GenotypeSerializeFunction<T[]>) as Serializable[];
   }
-
-  /**
-   *
-   * @param func
-   */
-  public toJSON(func?: ListSerializeFunction<T>): string {
-    return JSON.stringify(this.serialize(func));
-  }
 }

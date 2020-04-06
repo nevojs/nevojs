@@ -52,12 +52,6 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
     return serialize(data);
   }
 
-  public toJSON(
-    func?: GenotypeSerializeFunction<T>,
-  ): string {
-    return JSON.stringify(this.serialize(func));
-  }
-
   public crossover(
     amount: number,
     partners: Genotype<T>[],
