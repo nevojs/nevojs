@@ -64,3 +64,6 @@ export { Group, GroupData, GroupCloneSettings, GroupCrowdSettings, GroupConstruc
 export { $Evaluation, $Genotype, $AsyncBlueprint, $Blueprint, $Crossover, $Data, $Group, $Individual, $Mutation, $Phenotype, $SyncBlueprint } from "./util_types";
 
 export { list, individual, group, scale, minimize, maximize, blueprint } from "./creation";
+
+// helpers
+export { pick, PickEntry } from "./helpers";
