@@ -38,7 +38,7 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
     this._data = newData as T;
   }
 
-  public serialize(
+  public __serialize(
     func?: GenotypeSerializeFunction<T>,
   ): Serializable {
     const data = func

@@ -139,16 +139,16 @@ describe("List", () => {
     });
   });
 
-  describe("serialize", () => {
+  describe("__serialize", () => {
     it("returns the data", () => {
       const list = new List([1, 2, 3]);
-      expect(list.serialize()).toEqual([1, 2, 3]);
+      expect(list.__serialize()).toEqual([1, 2, 3]);
     });
 
     it("calls 'serialize' utility function to transform non-serializable values", () => {
       const list = new List([1, 2, 3]);
       const spy = jest.spyOn(serializationUtil, "serialize");
-      list.serialize();
+      list.__serialize();
 
       expect(spy.mock.calls.length).toBe(1);
       spy.mockClear();

@@ -25,7 +25,7 @@ import { Serializable } from "../serialization";
 export interface Genotype<D> {
   mutate(method: MutationMethod<D>): void;
   clone(func?: (data: D) => D): Genotype<D>;
-  serialize(func?: (data: D) => Serializable): any;
+  __serialize(func?: (data: D) => Serializable): any;
   data(): D;
   offspring(partners: Genotype<D>[], method: CrossoverMethod<D>): Genotype<D>[];
   crossover(amount: number, partners: Genotype<D>[], method: CrossoverMethod<D>): Genotype<D>[];

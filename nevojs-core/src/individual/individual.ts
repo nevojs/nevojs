@@ -287,7 +287,7 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
     settings: IndividualSerializationSettings<G, P> = {},
   ): SerializedIndividual {
     const check = settings.check ?? true;
-    const genotype = this.genotype.serialize(settings.genotype);
+    const genotype = this.genotype.__serialize(settings.genotype);
 
     if (settings.state !== undefined && typeof settings.state !== "function") {
       throw new TypeError();
