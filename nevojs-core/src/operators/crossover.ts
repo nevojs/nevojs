@@ -134,29 +134,30 @@ export function point(settings: Partial<PointCrossoverSettings> = {}): Crossover
 
 /**
  *
- * @param parents
  * @category crossover
  */
-export const ordered: CrossoverMethod<any[]> = parents => {
-  const points = range(0, parents[0].length - 1);
-  const [start, end] = pick(points, 2).sort((a, b) => a - b);
+export function ordered(): CrossoverMethod<any[]> {
+  return parents => {
+    const points = range(0, parents[0].length - 1);
+    const [start, end] = pick(points, 2).sort((a, b) => a - b);
 
-  const A = [parents[0], parents[1]];
-  const B = [parents[1], parents[0]];
+    const A = [parents[0], parents[1]];
+    const B = [parents[1], parents[0]];
 
-  const children: any[] = new Array(2);
+    const children: any[] = new Array(2);
 
-  for (let i = 0; i < 2; i++) {
-    const swath = A[i].slice(start, end);
-    const remaining = A[i].slice(0, start).concat(A[i].slice(end));
-    remaining.sort((a: any, b: any) => B[i].indexOf(a) - B[i].indexOf(b));
-    remaining.splice(start, 0, ...swath);
+    for (let i = 0; i < 2; i++) {
+      const swath = A[i].slice(start, end);
+      const remaining = A[i].slice(0, start).concat(A[i].slice(end));
+      remaining.sort((a: any, b: any) => B[i].indexOf(a) - B[i].indexOf(b));
+      remaining.splice(start, 0, ...swath);
 
-    children[i] = remaining;
-  }
+      children[i] = remaining;
+    }
 
-  return children;
-};
+    return children;
+  };
+}
 
 /**
  *
