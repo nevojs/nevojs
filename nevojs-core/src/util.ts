@@ -52,13 +52,6 @@ export function choose<T>(arr: T[], n: number): T[] {
 /**
  * @hidden
  */
-export function chooseOne<T>(arr: T[]): T {
-  return choose(arr, 1)[0];
-}
-
-/**
- * @hidden
- */
 export function range(start: number, end: number): number[] {
   const size = end - start + 1;
   const range = new Array(size);
@@ -96,17 +89,7 @@ export function toArray<T>(data: T | T[]): T[] {
 /**
  * @hidden
  */
-export type Without<T, U extends number | string> = Omit<T, U> & { [K in U]?: void; };
-
-/**
- * @hidden
- */
 export type Resolved<T> = T extends Promise<infer V> ? V : T;
-
-/**
- * @hidden
- */
-export type Merge<T1, T2> = Omit<T1, keyof T2> & T2;
 
 /**
  * @hidden
@@ -173,13 +156,3 @@ export function mapObjectValuesRecursively<T>(
     ? data.map(value => mapObjectValuesRecursively(value, func))
     : Object.fromEntries(Object.entries(data).map(([key, value]) => [key, mapObjectValuesRecursively(value, func)]));
 }
-
-/**
- * @hidden
- */
-export const id = <T>(value: T): T => value;
-
-/**
- * @hidden
- */
-export const deepClone = <T>(data: T): T => mapObjectValuesRecursively(data, id);
