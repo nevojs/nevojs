@@ -16,7 +16,8 @@
  */
 
 import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
-import { isNumber, isPositiveInt, choose, sum } from "../util";
+import { isNumber, isPositiveInt, choose } from "../util";
+import { pick } from "../helpers";
 import { AnyIndividual } from "../individual/individual";
 import {
   crowdingDistance,
@@ -118,41 +119,17 @@ export function tournament<I extends AnyIndividual>(
 }
 
 /**
- *
- * @param fitness
  * @category selection
- */
-export function proportionate<I extends AnyIndividual>(fitness: number[]): SelectionMethod<I> {
-  return (amount, individuals) => {
-    const amountOfIndividuals = individuals.length;
-    const fitnessSum = sum(fitness);
-
-    return Array.from(new Array(amount)).map(() => {
-      const roll = Math.random();
-
-      let currentProbability = 0;
-      const probabilities = fitness.map(x => currentProbability += x / fitnessSum);
-
-      for (let i = 0; i < amountOfIndividuals; i++) {
-        if (roll < probabilities[i]) {
-          return individuals[i];
-        }
-      }
-
-      return individuals[amountOfIndividuals - 1];
-    });
-  };
-}
-
-/**
- *
  * @param target
- * @category selection
  */
 export function roulette<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
   return (amount, individuals) => {
-    const method = proportionate<I>(individuals.map(target));
-    return method(amount, individuals);
+    const items = individuals.map(item => {
+      const probability = target(item);
+      return { probability, item };
+    });
+
+    return Array.from(new Array(amount)).map(() => pick(items));
   };
 }
 
@@ -164,7 +141,7 @@ export function roulette<I extends AnyIndividual>(target: ScalarizationMethod<I>
 export function rank<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
   return (amount, individuals) => {
     individuals.sort((a, b) => target(a) - target(b));
-    const method = proportionate<I>(individuals.map((_, i) => i + 1));
+    const method = roulette<I>(ind => individuals.indexOf(ind) + 1);
 
     return method(amount, individuals);
   };
