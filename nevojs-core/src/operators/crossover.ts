@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { isPositiveInt, pick, range, shuffle } from "../util";
+import { isPositiveInt, choose, range, shuffle } from "../util";
 
 /**
  *
@@ -139,7 +139,7 @@ export function point(settings: Partial<PointCrossoverSettings> = {}): Crossover
 export function ordered(): CrossoverMethod<any[]> {
   return parents => {
     const points = range(0, parents[0].length - 1);
-    const [start, end] = pick(points, 2).sort((a, b) => a - b);
+    const [start, end] = choose(points, 2).sort((a, b) => a - b);
 
     const A = [parents[0], parents[1]];
     const B = [parents[1], parents[0]];

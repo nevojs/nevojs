@@ -21,7 +21,7 @@ import {
   Individual, IndividualConstructorSettings,
 } from "./individual";
 import { $Genotype, $Phenotype, $Data } from "../util_types";
-import { merge, pick } from "../util";
+import { merge, choose } from "../util";
 import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { MutationMethod } from "../operators/mutation";
@@ -262,7 +262,7 @@ export class Group<I extends AnyIndividual> {
    * @param method
   */
   public child(method?: CrossoverMethod<$Data<$Genotype<I>>>): I {
-    const [child] = pick(this.offspring(method), 1);
+    const [child] = choose(this.offspring(method), 1);
     return child;
   }
 

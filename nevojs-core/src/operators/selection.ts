@@ -16,7 +16,7 @@
  */
 
 import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
-import { isNumber, isPositiveInt, pick, sum } from "../util";
+import { isNumber, isPositiveInt, choose, sum } from "../util";
 import { AnyIndividual } from "../individual/individual";
 import {
   crowdingDistance,
@@ -54,7 +54,7 @@ export function worst<I extends AnyIndividual>(target: ScalarizationMethod<I> = 
  * @category selection
  */
 export function random<I extends AnyIndividual>(): SelectionMethod<I> {
-  return (amount, individuals) => pick(individuals, amount);
+  return (amount, individuals) => choose(individuals, amount);
 }
 
 /**
@@ -103,7 +103,7 @@ export function tournament<I extends AnyIndividual>(
     const clone = individuals.slice();
 
     for (let i = 0; i < amount; i++) {
-      const sample = pick(clone, size);
+      const sample = choose(clone, size);
       const [selected] = winner(1, sample);
 
       picked[i] = selected;

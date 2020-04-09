@@ -35,7 +35,7 @@ export function shuffle<T>(arr: T[]): T[] {
 /**
  * @hidden
  */
-export function pick<T>(arr: T[], n: number): T[] {
+export function choose<T>(arr: T[], n: number): T[] {
   const picked: T[] = new Array(n);
   const clone = arr.slice();
 
@@ -52,8 +52,8 @@ export function pick<T>(arr: T[], n: number): T[] {
 /**
  * @hidden
  */
-export function pickOne<T>(arr: T[]): T {
-  return pick(arr, 1)[0];
+export function chooseOne<T>(arr: T[]): T {
+  return choose(arr, 1)[0];
 }
 
 /**
