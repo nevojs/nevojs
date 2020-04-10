@@ -21,9 +21,9 @@ export { TournamentSelectionSettings, SelectionMethod, NSGA2Settings } from "./o
 export const selection = { best, random, rank, roulette, tournament, worst, NSGA2 };
 
 // mutation
-import { alternateGene, alternatePart, inversion, map, scramble, swap, bound, flip, gauss } from "./operators/mutation";
-export { MutationMethod, MutationBoundSettings, AlternatePartSettings, AlternateGeneSettings, MutationMapSettings, PureMutationMethod, ImpureMutationMethod, MutationMapFunction } from "./operators/mutation";
-export const mutation = { inversion, scramble, map, swap, alternateGene, alternatePart, bound, flip, gauss };
+import { alternateGene, alternatePart, inversion, map, forEach, scramble, swap, bound, flip, gauss } from "./operators/mutation";
+export { MutationMethod, MutationBoundSettings, AlternatePartSettings, AlternateGeneSettings, IterativeMutationSettings, IterativeMutationCallback } from "./operators/mutation";
+export const mutation = { inversion, scramble, map, forEach, swap, alternateGene, alternatePart, bound, flip, gauss };
 
 // crossover
 import { blend, ordered, point, simulatedBinary, uniform } from "./operators/crossover";

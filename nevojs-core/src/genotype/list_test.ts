@@ -16,7 +16,7 @@
  */
 
 import { List } from "./list";
-import { ImpureMutationMethod, PureMutationMethod } from "../operators/mutation";
+import { MutationMethod } from "../operators/mutation";
 
 describe("List", () => {
   describe("generate", () => {
@@ -80,38 +80,11 @@ describe("List", () => {
     });
 
     it("changes the data (pure mutation)", () => {
-      const method: PureMutationMethod<number[]> = data => data.map(gene => gene + 1);
+      const method: MutationMethod<number[]> = data => data.map(gene => gene + 1);
       const list = new List([1, 2, 3]);
       list.mutate(method);
 
       expect(list.data()).toEqual([2, 3, 4]);
-    });
-
-    it("changes the data (impure mutation)", () => {
-      interface Gene {
-        value: number;
-      }
-
-      const method: ImpureMutationMethod<Gene[]> = data => {
-        data.forEach(gene => {
-          gene.value += 1;
-        });
-
-        return null;
-      };
-
-      const list = new List([
-        { value: 1 },
-        { value: 2 },
-        { value: 3 },
-      ]);
-      list.mutate(method);
-
-      expect(list.data()).toEqual([
-        { value: 2 },
-        { value: 3 },
-        { value: 4 },
-      ]);
     });
   });
 

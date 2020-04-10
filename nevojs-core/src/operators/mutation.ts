@@ -20,39 +20,30 @@ import { randomGauss, shuffle } from "../util";
 /**
  *
  */
-export type PureMutationMethod<D> = (data: D) => D;
+export type MutationMethod<D> = (data: D) => D;
 
 /**
  *
  */
-export type ImpureMutationMethod<D> = (data: D) => null;
+export type IterativeMutationCallback<T, U = T> = (value: T, i: number, arr: T[]) => U;
 
 /**
  *
  */
-export type MutationMethod<D> = PureMutationMethod<D> | ImpureMutationMethod<D>;
-
-/**
- *
- */
-export type MutationMapFunction<T, U = T> = (value: T, i: number, arr: T[]) => U;
-
-/**
- *
- */
-export interface MutationMapSettings<T> {
-  rate?: number | MutationMapFunction<T, number>;
+export interface IterativeMutationSettings<T> {
+  rate?: number | IterativeMutationCallback<T, number>;
 }
 
 /**
  *
  * @param func
  * @param settings
+ * @category mutation
  */
-export function map<T, U extends T | null = T>(
-  func: MutationMapFunction<T, U>,
-  settings: MutationMapSettings<T> = {},
-): U extends T ? PureMutationMethod<T[]> : ImpureMutationMethod<T[]> {
+export function map<T>(
+  func: IterativeMutationCallback<T>,
+  settings: IterativeMutationSettings<T> = {},
+): MutationMethod<T[]> {
   const rate = settings.rate ?? 1;
 
   if (typeof func !== "function") {
@@ -67,23 +58,34 @@ export function map<T, U extends T | null = T>(
     throw new TypeError();
   }
 
-  const method: PureMutationMethod<T[]> = genes => genes.map((gene, i) => {
+  return genes => genes.map((gene, i) => {
     const probability = typeof rate === "function"
       ? rate(gene, i, genes)
       : rate;
 
-    if (probability > Math.random()) {
-      const x = func(gene, i, genes);
-
-      if (x) {
-        return x as unknown as T;
-      }
-    }
-
-    return gene;
+    return probability > Math.random()
+      ? func(gene, i, genes)
+      : gene;
   });
+}
 
-  return method as any;
+/**
+ *
+ * @param func
+ * @param settings
+ * @category mutation
+ */
+export function forEach<T>(
+  func: IterativeMutationCallback<T, void>,
+  settings: IterativeMutationSettings<T> = {},
+): MutationMethod<T[]> {
+  return map(
+    (gene, i, genes) => {
+      func(gene, i, genes);
+      return gene;
+    },
+    settings,
+  );
 }
 
 /**
@@ -101,9 +103,9 @@ export interface MutationBoundSettings {
  * @category mutation
  */
 export function bound(
-  func: PureMutationMethod<number>,
+  func: MutationMethod<number>,
   settings: MutationBoundSettings = {},
-): PureMutationMethod<number> {
+): MutationMethod<number> {
   const min = settings.min ?? -Infinity;
   const max = settings.max ?? Infinity;
 
@@ -134,9 +136,9 @@ export interface AlternateGeneSettings<T> {
  * @category mutation
  */
 export function alternateGene<T>(
-  func: MutationMapFunction<T>,
+  func: IterativeMutationCallback<T>,
   settings: AlternateGeneSettings<T> = {},
-): PureMutationMethod<T[]> {
+): MutationMethod<T[]> {
   return genes => {
     const unresolvedIndex = settings.index ?? Math.floor(Math.random() * genes.length);
     const index = typeof unresolvedIndex === "function"
@@ -169,7 +171,7 @@ export interface AlternatePartSettings<T> {
 export function alternatePart<T>(
   func: (data: T[], start: number, end: number) => T[],
   settings: AlternatePartSettings<T> = {},
-): PureMutationMethod<T[]> {
+): MutationMethod<T[]> {
   return genes => {
     const unresolvedStart = settings.start ?? Math.floor(Math.random() * (genes.length - 1));
     const start = typeof unresolvedStart === "function"
@@ -195,14 +197,14 @@ export function alternatePart<T>(
  * @param gene
  * @category mutation
  */
-export const flip: PureMutationMethod<number> = gene => Number(!gene);
+export const flip: MutationMethod<number> = gene => Number(!gene);
 
 /**
  *
  * @param settings
  * @category mutation
  */
-export function inversion<T = any>(settings?: AlternatePartSettings<T>): PureMutationMethod<T[]> {
+export function inversion<T = any>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
   return alternatePart(genes => genes.reverse(), settings);
 }
 
@@ -211,7 +213,7 @@ export function inversion<T = any>(settings?: AlternatePartSettings<T>): PureMut
  * @param settings
  * @category mutation
  */
-export function swap<T>(settings?: AlternatePartSettings<T>): PureMutationMethod<T[]> {
+export function swap<T>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
   return alternatePart(genes => {
     const start = 0;
     const end = genes.length - 1;
@@ -226,13 +228,13 @@ export function swap<T>(settings?: AlternatePartSettings<T>): PureMutationMethod
  * @param settings
  * @category mutation
  */
-export function scramble<T>(settings?: AlternatePartSettings<T>): PureMutationMethod<T[]> {
+export function scramble<T>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
   return alternatePart(shuffle, settings);
 }
 
 /**
  * @category mutation
  */
-export function gauss(): PureMutationMethod<number> {
+export function gauss(): MutationMethod<number> {
   return gene => gene + randomGauss();
 }

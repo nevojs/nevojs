@@ -18,13 +18,8 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
 
   public mutate(method: MutationMethod<T>): void {
     const currentData = this.data();
-    const newData = method(currentData);
 
-    if (newData === null) {
-      return;
-    }
-
-    this._data = newData as T;
+    this._data = method(currentData) as T;
   }
 
   public __serialize(): unknown {
