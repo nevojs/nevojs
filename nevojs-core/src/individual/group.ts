@@ -15,7 +15,6 @@
  * =============================================================================
  */
 
-import * as validation from "../util";
 import {
   AnyIndividual,
   Individual, IndividualConstructorSettings,
@@ -26,6 +25,7 @@ import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { MutationMethod } from "../operators/mutation";
 import { SelectionMethod } from "../operators/selection";
+import { Collection } from "../collection";
 
 /**
  *
@@ -57,42 +57,20 @@ export interface GroupCrowdSettings {
 /**
  *
  */
-export class Group<I extends AnyIndividual> {
-  private _members: I[];
-  private _size: number;
-
-  /**
-   *
-   */
-  public get size(): number {
-    return this._size;
-  }
-
-  /**
-   *
-   */
-  public get length(): number {
-    return this._members.length;
-  }
-
+export class Group<I extends AnyIndividual> extends Collection<I> {
   /**
    *
    * @param settings
    */
   public constructor(settings: Partial<GroupConstructorSettings<I>> = {}) {
+    super(settings);
+
     this._members = settings.members ?? [];
     this._size = settings.size ?? this._members.length;
 
     if (this.size === Infinity) {
       throw new TypeError();
     }
-  }
-
-  /**
-   *
-   */
-  public members(): I[] {
-    return this._members.slice();
   }
 
   /**
@@ -199,34 +177,7 @@ export class Group<I extends AnyIndividual> {
    * @param data
    */
   public remove(data: GroupData<I>): void {
-    const members = Group.parse(data);
-
-    for (const member of members) {
-      const i = this._members.indexOf(member);
-      this._members.splice(i, 1);
-    }
-  }
-
-  /**
-   *
-   * @param data
-   */
-  public set(data: GroupData<I>): void {
-    this._members = Group.parse(data);
-  }
-
-  /**
-   *
-   */
-  public empty(): void {
-    this.set([]);
-  }
-
-  /**
-   *
-   */
-  public space(): number {
-    return this.size - this.length;
+    super.remove(data);
   }
 
   /**
@@ -288,13 +239,7 @@ export class Group<I extends AnyIndividual> {
    * @param data
    */
   public add(data: GroupData<I>): void {
-    const parsed = Group.parse(data);
-
-    if (parsed.length > this.space()) {
-      throw new Error(`Cannot contain ${this.length + parsed.length} members in ${this.size}-sized group`);
-    }
-
-    this._members = this.members().concat(parsed);
+    super.add(data);
   }
 
   /**
@@ -302,112 +247,6 @@ export class Group<I extends AnyIndividual> {
    * @param data
    */
   public push(data: GroupData<I>): void {
-    const parsed = Group.parse(data);
-
-    this.resize(this.size + parsed.length);
-    this.add(parsed);
-  }
-
-  /**
-   *
-   * @param func
-   * @param settings
-   */
-  public crowd(
-    func: (i: number) => GroupData<I>,
-    settings: GroupCrowdSettings = {},
-  ): I[] {
-    const threshold = settings.threshold ?? this.space();
-
-    if (
-      !validation.isNumber(threshold) ||
-      !validation.isFinite(threshold) ||
-      !validation.isPositiveInt(threshold)
-    ) {
-      throw new TypeError(`Expected threshold to be a finite, positive integer value (${threshold} given)`);
-    }
-
-    let i = 0;
-    const members: I[] = [];
-
-    while (threshold > members.length) {
-      const data = Group.parse(func(i++));
-      members.push(...data);
-    }
-
-    this.add(members.slice(0, threshold));
-    return members;
-  }
-
-  /**
-   *
-   * @param func
-   * @param settings
-   */
-  public async crowdAsync(
-    func: (i: number) => Promise<GroupData<I>>,
-    settings: GroupCrowdSettings = {},
-  ): Promise<I[]> {
-    const threshold = settings.threshold ?? this.space();
-
-    if (
-      !validation.isNumber(threshold) ||
-      !validation.isFinite(threshold) ||
-      !validation.isPositiveInt(threshold)
-    ) {
-      throw new TypeError( `Expected threshold to be a finite, positive integer value (${threshold} given)`);
-    }
-
-    let i = 0;
-    const members: I[] = [];
-
-    while (threshold > members.length) {
-      const data = Group.parse(await func(i++));
-      members.push(...data);
-    }
-
-    this.add(members.slice(0, threshold));
-    return members;
-  }
-
-  /**
-   *
-   * @param size
-   */
-  public resize(size: number = this.space()): void {
-    if (
-      !validation.isNumber(size) ||
-      !validation.isPositiveInt(size)
-    ) {
-      throw new TypeError(`Expected size to be positive integer or an Infinity, (${size} given)`);
-    }
-
-    if (this.length > size) {
-      console.warn(`Warning: Resize to ${size} in the ${this.length}-element group, removing last ${this.length - size} members`);
-
-      this.set(this.members().slice(0, size));
-    }
-
-    this._size = size;
-  }
-
-  /**
-   *
-   * @param data
-   */
-  public static parse<I extends AnyIndividual>(data: GroupData<I>): I[] {
-    if (data instanceof Group) {
-      return data.members();
-    }
-
-    if (Array.isArray(data)) {
-      return data.slice();
-    }
-
-    if (data instanceof Individual) {
-      return [data];
-    }
-
-    throw new TypeError();
+    super.push(data);
   }
 }
