@@ -175,6 +175,7 @@ export function blend(settings: Partial<BlendCrossoverSettings> = {}): Crossover
   const alpha = settings.alpha ?? 0.5;
 
   return parents => {
+    const children = new Array(2);
     const [parentA, parentB] = parents;
 
     if (
@@ -184,20 +185,21 @@ export function blend(settings: Partial<BlendCrossoverSettings> = {}): Crossover
       throw new TypeError();
     }
 
-    const child = parentA.map((_, i) => {
-      const [a, b] = [parentA[i], parentB[i]].sort((a, b) => a - b);
+    for (let i = 0; i < 2; i++) {
+      children[i] = parentA.map((_, i) => {
+        const [a, b] = [parentA[i], parentB[i]].sort((a, b) => a - b);
 
-      const offset = alpha * (b - a);
-      const min = a - offset;
-      const max = b + offset;
+        const offset = alpha * (b - a);
+        const min = a - offset;
+        const max = b + offset;
 
-      return Math.random() * (max - min) + min;
-    });
+        return Math.random() * (max - min) + min;
+      });
+    }
 
-    return [child];
+    return children;
   };
 }
-
 /**
  *
  */
