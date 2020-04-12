@@ -45,6 +45,7 @@
     "rollup-plugin-uglify": "6.0.4",
     "ts-jest": "25.1.0",
     "typedoc": "next",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "fast-check": "1.24.1"
   }
 }
