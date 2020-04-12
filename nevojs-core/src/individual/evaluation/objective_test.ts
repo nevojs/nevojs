@@ -15,107 +15,300 @@
  * =============================================================================
  */
 
+import * as fc from "fast-check";
 import { Objective, SerializedObjective } from "./objective";
-
-function compareObjectives(objA: Objective, objB: Objective): boolean {
-  return objA.value === objB.value && objA.weight === objB.weight;
-}
+import { SerializedValue } from "../../serialization";
 
 describe("Objective", () => {
-  const objective = new Objective(5, 3);
+  describe("constructor", () => {
+    it("throws a TypeError if the value is not a valid number", () => {
+      fc.assert(fc.property(fc.anything(), value => {
+        fc.pre(typeof value !== "number" || isNaN(value));
 
-  describe("value", () => {
-    it("returns the value passed to objective when created", () => {
-      expect(objective.value).toBe(5);
+        expect(() => new Objective(value as number, 1)).toThrowError(TypeError);
+      }));
+    });
+
+    it("throws a TypeError if the weight is not a valid number", () => {
+      fc.assert(fc.property(fc.anything(), weight => {
+        fc.pre(typeof weight !== "number" || isNaN(weight));
+
+        expect(() => new Objective(1, weight as number)).toThrowError(TypeError);
+      }));
     });
   });
 
-  describe("weight", () => {
+  describe("value (get)", () => {
+    it("returns the value passed to objective when created", () => {
+      fc.assert(fc.property(fc.integer(), value => {
+        const objective = new Objective(value, 1);
+
+        expect(objective.value).toBe(value);
+      }));
+    });
+  });
+
+  describe("weight (get)", () => {
     it("returns the weight passed to objective when created", () => {
-      expect(objective.weight).toBe(3);
+      fc.assert(fc.property(fc.integer(), weight => {
+        const objective = new Objective(1, weight);
+
+        expect(objective.weight).toBe(weight);
+      }));
+    });
+  });
+
+  describe("value (set)", () => {
+    it("sets the value", () => {
+      fc.assert(fc.property(fc.integer(), value => {
+        const objective = new Objective(1, 1);
+        objective.value = value;
+
+        expect(objective.value).toBe(value);
+      }));
+    });
+
+    it("throws a TypeError if the value is not a valid number", () => {
+      fc.assert(fc.property(fc.anything(), value => {
+        fc.pre(typeof value !== "number" || isNaN(value));
+
+        const objective = new Objective(2, 1);
+
+        expect(() => {
+          objective.value = value as number;
+        }).toThrow(TypeError);
+      }));
+    });
+  });
+
+  describe("weight (set)", () => {
+    it("sets the weight", () => {
+      fc.assert(fc.property(fc.integer(), weight => {
+        const objective = new Objective(1, 1);
+        objective.weight = weight;
+
+        expect(objective.weight).toBe(weight);
+      }));
+    });
+
+    it("throws a TypeError if the weight is not a valid number", () => {
+      fc.assert(fc.property(fc.anything(), weight => {
+        fc.pre(typeof weight !== "number" || isNaN(weight));
+
+        const objective = new Objective(2, 1);
+
+        expect(() => {
+          objective.weight = weight as number;
+        }).toThrow(TypeError);
+      }));
     });
   });
 
   describe("fitness", () => {
-    it("returns computed fitness (value * weight)", () => {
-      expect(objective.fitness()).toBe(15);
+    it("returns computed fitness", () => {
+      fc.assert(fc.property(fc.integer(), fc.integer(), (value, weight) => {
+        const objective = new Objective(value, weight);
+
+        expect(objective.fitness()).toBe(value * weight);
+      }));
     });
   });
 
   describe("clone", () => {
-    const copy = objective.clone();
-
     it("returns a instance of Objective", () => {
+      const objective = new Objective(-3, -2);
+      const copy = objective.clone();
+
       expect(copy).toBeInstanceOf(Objective);
     });
 
     it("does not equal original objective", () => {
+      const objective = new Objective(8, 4);
+      const copy = objective.clone();
+
       expect(copy).not.toBe(objective);
     });
 
-    it("has the same value and weight as the original objective", () => {
-      expect(compareObjectives(objective, copy)).toBe(true);
+    it("has the same value as the original objective", () => {
+      fc.assert(fc.property(fc.integer(), value => {
+        const objective = new Objective(value, 1);
+        const copy = objective.clone();
+
+        expect(copy.value).toBe(value);
+      }));
+    });
+
+    it("has the same weight as the original objective", () => {
+      fc.assert(fc.property(fc.integer(), weight => {
+        const objective = new Objective(1, weight);
+        const copy = objective.clone();
+
+        expect(copy.weight).toBe(weight);
+      }));
     });
   });
 
   describe("serialize", () => {
-    const serialized = objective.serialize();
+    it("properly serializes value (numeric)", () => {
+      fc.assert(fc.property(fc.integer(), value => {
+        const objective = new Objective(value, 1);
+        const serialized = objective.serialize();
 
-    it("returns an object", () => {
-      expect(serialized).toBeInstanceOf(Object);
+        expect(serialized.value).toBe(value);
+      }));
     });
 
-    describe("value", () => {
-      it("is equal to the value in original objective converted to string", () => {
-        const objective = new Objective(5, 3);
+    it("properly serializes value (Infinity)", () => {
+      const objective = new Objective(Infinity, 1);
+      const serialized = objective.serialize();
+
+      expect(serialized.value).toBe(SerializedValue.PositiveInfinity);
+    });
+
+    it("properly serializes value (-Infinity)", () => {
+      const objective = new Objective(-Infinity, 1);
+      const serialized = objective.serialize();
+
+      expect(serialized.value).toBe(SerializedValue.NegativeInfinity);
+    });
+
+    it("properly serializes weight (numeric)", () => {
+      fc.assert(fc.property(fc.integer(), weight => {
+        const objective = new Objective(1, weight);
         const serialized = objective.serialize();
 
-        expect(serialized.value).toBe(5);
-      });
+        expect(serialized.weight).toBe(weight);
+      }));
+    });
 
-      it("is equal to the value in original objective converted to string (Infinity)", () => {
-        const objective = new Objective(Infinity, 3);
-        const serialized = objective.serialize();
+    it("properly serializes weight (Infinity)", () => {
+      const objective = new Objective(1, Infinity);
+      const serialized = objective.serialize();
 
-        expect(serialized.value).toBe("__POSITIVE_INFINITY__");
-      });
+      expect(serialized.weight).toBe(SerializedValue.PositiveInfinity);
+    });
 
-      it("is equal to the value in original objective converted to string (-Infinity)", () => {
-        const objective = new Objective(-Infinity, 3);
-        const serialized = objective.serialize();
+    it("properly serializes weight (-Infinity)", () => {
+      const objective = new Objective(1, -Infinity);
+      const serialized = objective.serialize();
 
-        expect(serialized.value).toBe("__NEGATIVE_INFINITY__");
-      });
+      expect(serialized.weight).toBe(SerializedValue.NegativeInfinity);
     });
   });
 
   describe("deserialize", () => {
-    const serialized: SerializedObjective = {
-      value: 5,
-      weight: 3,
-    };
+    it("properly assigns value and weight", () => {
+      fc.assert(fc.property(fc.integer(), fc.integer(), (value, weight) => {
+        const serialized = { value, weight } as SerializedObjective;
+        const deserialized = Objective.deserialize(serialized);
 
-    const deserialized = Objective.deserialize(serialized);
+        expect(deserialized.value).toBe(value);
+        expect(deserialized.weight).toBe(weight);
+      }));
+    });
 
     it("returns instance of Objective", () => {
+      const serialized = { value: 1, weight: -1 } as SerializedObjective;
+      const deserialized = Objective.deserialize(serialized);
+
       expect(deserialized).toBeInstanceOf(Objective);
     });
 
-    it("returns objective with valid value", () => {
-      expect(deserialized.value).toBe(serialized.value);
+    it("properly deserializes value (numeric)", () => {
+      fc.assert(fc.property(fc.integer(), value => {
+        const serialized: SerializedObjective = {
+          value,
+          weight: 1,
+        };
+
+        const deserialized = Objective.deserialize(serialized);
+        expect(deserialized.value).toBe(value);
+      }));
     });
 
-    it("returns objective with valid weight", () => {
-      expect(deserialized.weight).toBe(serialized.weight);
+    it("properly deserializes value (Infinity)", () => {
+      const serialized: SerializedObjective = {
+        value: SerializedValue.PositiveInfinity,
+        weight: 1,
+      };
+
+      const deserialized = Objective.deserialize(serialized);
+      expect(deserialized.value).toBe(Infinity);
+    });
+
+    it("properly deserializes value (-Infinity)", () => {
+      const serialized: SerializedObjective = {
+        value: SerializedValue.NegativeInfinity,
+        weight: 1,
+      };
+
+      const deserialized = Objective.deserialize(serialized);
+      expect(deserialized.value).toBe(-Infinity);
+    });
+
+    it("properly deserializes weight (numeric)", () => {
+      fc.assert(fc.property(fc.integer(), weight => {
+        const serialized: SerializedObjective = {
+          value: 1,
+          weight,
+        };
+
+        const deserialized = Objective.deserialize(serialized);
+        expect(deserialized.weight).toBe(weight);
+      }));
+    });
+
+    it("properly deserializes weight (Infinity)", () => {
+      const serialized: SerializedObjective = {
+        value: 1,
+        weight: SerializedValue.PositiveInfinity,
+      };
+
+      const deserialized = Objective.deserialize(serialized);
+      expect(deserialized.weight).toBe(Infinity);
+    });
+
+    it("properly deserializes weight (-Infinity)", () => {
+      const serialized: SerializedObjective = {
+        value: 1,
+        weight: SerializedValue.NegativeInfinity,
+      };
+
+      const deserialized = Objective.deserialize(serialized);
+      expect(deserialized.weight).toBe(-Infinity);
+    });
+  });
+
+  describe("fromJSON", () => {
+    it("calls Objective.deserialize", () => {
+      const data = JSON.stringify({ value: 2, weight: -1 });
+      const spy = jest.spyOn(Objective, "deserialize");
+
+      Objective.fromJSON(data);
+      expect(spy).toBeCalledTimes(1);
+
+      spy.mockClear();
     });
   });
 
   describe("toJSON", () => {
     it("returns JSON of serialized objective", () => {
-      const objective = new Objective(3, 2);
-      const data = objective.toJSON();
+      fc.assert(fc.property(fc.integer(), fc.integer(), (value, weight) => {
+        const objective = new Objective(value, weight);
+        const data = objective.toJSON();
 
-      expect(data).toBe('{"value":3,"weight":2}'); // eslint-disable-line
+        expect(JSON.parse(data)).toEqual({ value, weight });
+      }));
+    });
+
+    it("calls Objective.prototype.serialize", () => {
+      const objective = new Objective(-4, 1);
+      const spy = jest.spyOn(objective, "serialize");
+
+      objective.toJSON();
+      expect(spy).toBeCalledTimes(1);
+
+      spy.mockClear();
     });
   });
 });
