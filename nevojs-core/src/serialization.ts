@@ -44,10 +44,12 @@ export function isSerializable(data: any): data is Serializable {
   return inspectObjectRecursively(data, property => ["string", "number", "boolean", "undefined"].includes(typeof property));
 }
 
-const NAN = "__NAN__";
-const POSITIVE_INFINITY = "__POSITIVE_INFINITY__";
-const NEGATIVE_INFINITY = "__NEGATIVE_INFINITY__";
-const UNDEFINED = "__UNDEFINED__";
+export enum SerializedValue {
+  NotANumber = "__NAN__",
+  PositiveInfinity = "__POSITIVE_INFINITY__",
+  NegativeInfinity = "__NEGATIVE_INFINITY__",
+  Undefined = "__UNDEFINED__",
+}
 
 /**
  * @hidden
@@ -56,19 +58,19 @@ const UNDEFINED = "__UNDEFINED__";
 export function serialize(data: any): any {
   const override = (value: any) => {
     if (Number.isNaN(value)) {
-      return NAN;
+      return SerializedValue.NotANumber;
     }
 
     if (value === Number.POSITIVE_INFINITY) {
-      return POSITIVE_INFINITY;
+      return SerializedValue.PositiveInfinity;
     }
 
     if (value === Number.NEGATIVE_INFINITY) {
-      return NEGATIVE_INFINITY;
+      return SerializedValue.NegativeInfinity;
     }
 
     if (value === undefined) {
-      return UNDEFINED;
+      return SerializedValue.Undefined;
     }
 
     return value;
@@ -83,19 +85,19 @@ export function serialize(data: any): any {
  */
 export function deserialize(data: any): any {
   const override = (value: string) => {
-    if (value === NAN) {
+    if (value === SerializedValue.NotANumber) {
       return NaN;
     }
 
-    if (value === POSITIVE_INFINITY) {
+    if (value === SerializedValue.PositiveInfinity) {
       return Infinity;
     }
 
-    if (value === NEGATIVE_INFINITY) {
+    if (value === SerializedValue.NegativeInfinity) {
       return -Infinity;
     }
 
-    if (value === UNDEFINED) {
+    if (value === SerializedValue.Undefined) {
       return undefined;
     }
 
