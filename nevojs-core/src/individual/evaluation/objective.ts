@@ -21,8 +21,8 @@ import { deserialize, serialize } from "../../serialization";
  *
  */
 export interface SerializedObjective {
-  value: number;
-  weight: number;
+  value: number | string;
+  weight: number | string;
 }
 
 /**
@@ -34,10 +34,10 @@ export class Objective {
    * @param serialized
    */
   public static deserialize(serialized: SerializedObjective): Objective {
-    serialized = deserialize(serialized);
+    const deserialized = deserialize(serialized);
 
-    const value = serialized.value;
-    const weight = serialized.weight;
+    const value = deserialized.value as number;
+    const weight = deserialized.weight as number;
 
     return new Objective(value, weight);
   }
@@ -47,7 +47,7 @@ export class Objective {
    * @param data
    */
   public static fromJSON(data: string): Objective {
-    return this.deserialize(JSON.parse(data));
+    return Objective.deserialize(JSON.parse(data));
   }
 
   /**
@@ -69,11 +69,11 @@ export class Objective {
     value: number,
     weight: number,
   ) {
-    if (isNaN(value)) {
+    if (isNaN(value) || typeof value !== "number") {
       throw new TypeError();
     }
 
-    if (isNaN(weight)) {
+    if (isNaN(weight) || typeof weight !== "number") {
       throw new TypeError();
     }
 
@@ -86,6 +86,10 @@ export class Objective {
    * @param value
    */
   public set value(value: number) {
+    if (isNaN(value) || typeof value !== "number") {
+      throw new TypeError();
+    }
+
     this._value = value;
   }
 
@@ -98,10 +102,14 @@ export class Objective {
 
   /**
    *
-   * @param value
+   * @param weight
    */
-  public set weight(value: number) {
-    this._weight = value;
+  public set weight(weight: number) {
+    if (isNaN(weight) || typeof weight !== "number") {
+      throw new TypeError();
+    }
+
+    this._weight = weight;
   }
 
   /**
