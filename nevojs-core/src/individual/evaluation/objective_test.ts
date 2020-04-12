@@ -17,7 +17,7 @@
 
 import * as fc from "fast-check";
 import { Objective, SerializedObjective } from "./objective";
-import { SerializedValue } from "../../serialization";
+import { SerializedValueIdentifier } from "../../serialization";
 
 describe("Objective", () => {
   describe("constructor", () => {
@@ -162,14 +162,14 @@ describe("Objective", () => {
       const objective = new Objective(Infinity, 1);
       const serialized = objective.serialize();
 
-      expect(serialized.value).toBe(SerializedValue.PositiveInfinity);
+      expect(serialized.value).toBe(SerializedValueIdentifier.PositiveInfinity);
     });
 
     it("properly serializes value (-Infinity)", () => {
       const objective = new Objective(-Infinity, 1);
       const serialized = objective.serialize();
 
-      expect(serialized.value).toBe(SerializedValue.NegativeInfinity);
+      expect(serialized.value).toBe(SerializedValueIdentifier.NegativeInfinity);
     });
 
     it("properly serializes weight (numeric)", () => {
@@ -185,14 +185,14 @@ describe("Objective", () => {
       const objective = new Objective(1, Infinity);
       const serialized = objective.serialize();
 
-      expect(serialized.weight).toBe(SerializedValue.PositiveInfinity);
+      expect(serialized.weight).toBe(SerializedValueIdentifier.PositiveInfinity);
     });
 
     it("properly serializes weight (-Infinity)", () => {
       const objective = new Objective(1, -Infinity);
       const serialized = objective.serialize();
 
-      expect(serialized.weight).toBe(SerializedValue.NegativeInfinity);
+      expect(serialized.weight).toBe(SerializedValueIdentifier.NegativeInfinity);
     });
   });
 
@@ -228,7 +228,7 @@ describe("Objective", () => {
 
     it("properly deserializes value (Infinity)", () => {
       const serialized: SerializedObjective = {
-        value: SerializedValue.PositiveInfinity,
+        value: SerializedValueIdentifier.PositiveInfinity,
         weight: 1,
       };
 
@@ -238,7 +238,7 @@ describe("Objective", () => {
 
     it("properly deserializes value (-Infinity)", () => {
       const serialized: SerializedObjective = {
-        value: SerializedValue.NegativeInfinity,
+        value: SerializedValueIdentifier.NegativeInfinity,
         weight: 1,
       };
 
@@ -261,7 +261,7 @@ describe("Objective", () => {
     it("properly deserializes weight (Infinity)", () => {
       const serialized: SerializedObjective = {
         value: 1,
-        weight: SerializedValue.PositiveInfinity,
+        weight: SerializedValueIdentifier.PositiveInfinity,
       };
 
       const deserialized = Objective.deserialize(serialized);
@@ -271,7 +271,7 @@ describe("Objective", () => {
     it("properly deserializes weight (-Infinity)", () => {
       const serialized: SerializedObjective = {
         value: 1,
-        weight: SerializedValue.NegativeInfinity,
+        weight: SerializedValueIdentifier.NegativeInfinity,
       };
 
       const deserialized = Objective.deserialize(serialized);
