@@ -102,14 +102,14 @@ export function isNumber(x: any): x is number {
  * @hidden
  */
 export function isFinite(x: number): boolean {
-  return x !== Infinity && x !== -Infinity;
+  return isNumber(x) && x !== Infinity && x !== -Infinity;
 }
 
 /**
  * @hidden
  */
 export function isPositiveInt(x: number): boolean {
-  return x > 0 && x % 1 === 0;
+  return isNumber(x) && isFinite(x) && x > 0 && x % 1 === 0;
 }
 
 /**
