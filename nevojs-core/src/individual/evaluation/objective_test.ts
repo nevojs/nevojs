@@ -115,7 +115,7 @@ describe("Objective", () => {
   });
 
   describe("clone", () => {
-    it("returns a instance of Objective", () => {
+    it("returns an instance of Objective", () => {
       const objective = new Objective(-3, -2);
       const copy = objective.clone();
 
