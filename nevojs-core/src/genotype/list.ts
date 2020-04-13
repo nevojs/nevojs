@@ -18,6 +18,7 @@
 import { CrossoverMethod } from "../operators/crossover";
 import { MutationMethod } from "../operators/mutation";
 import { AbstractGenotype } from "./abstract_genotype";
+import { isPositiveInt } from "../util";
 
 /**
  *
@@ -34,6 +35,14 @@ export class List<T> extends AbstractGenotype<T[]> {
    * @param func
    */
   public static generate<T>(size: number, func: ListGenerateFunction<T>): List<T> {
+    if (!isPositiveInt(size)) {
+      throw new TypeError();
+    }
+
+    if (typeof func !== "function") {
+      throw new TypeError();
+    }
+
     const genes = new Array(size);
 
     for (let i = 0; i < size; i++) {
@@ -55,6 +64,10 @@ export class List<T> extends AbstractGenotype<T[]> {
    * @param data
    */
   public constructor(data: T[]) {
+    if (!Array.isArray(data)) {
+      throw new TypeError();
+    }
+
     super(data);
   }
 
@@ -81,6 +94,10 @@ export class List<T> extends AbstractGenotype<T[]> {
    *
    */
   public clone(func?: (data: T[]) => T[]): List<T> {
+    if (func !== undefined && typeof func !== "function") {
+      throw new TypeError();
+    }
+
     const data = func
       ? func(this.data())
       : this.data();
