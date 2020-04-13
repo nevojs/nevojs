@@ -1,6 +1,7 @@
 import { Genotype } from "../individual/data";
 import { MutationMethod } from "../operators/mutation";
 import { CrossoverMethod } from "../operators/crossover";
+import { isPositiveInt } from "../util";
 
 /**
  *
@@ -31,6 +32,10 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
     partners: Genotype<T>[],
     method: CrossoverMethod<T>
   ): Genotype<T>[] {
+    if (!isPositiveInt(amount)) {
+      throw new TypeError();
+    }
+
     const children: Genotype<T>[] = [];
 
     while (amount > children.length) {
