@@ -3,6 +3,6 @@ node_js:
   - 12
 cache: yarn
 
-before_script: cd nevojs-core
+before_install: cd nevojs-core
 script:
   - yarn test-ci
