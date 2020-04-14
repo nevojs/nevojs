@@ -15,4 +15,33 @@
  * =============================================================================
  */
 
-describe("-", () => void it("-", () => expect(1).toBe(1)));
+import { Individual } from "../individual";
+import { List } from "../../genotype/list";
+import { Objective } from "../evaluation/objective";
+import { weightedSum } from "./scalarization";
+
+describe("weightedSum", () => {
+  it("returns sum of the individual fitness (single objective)", () => {
+    const individual = new Individual({ genotype: new List([]) });
+    individual.evaluate(() => new Objective(3, 2));
+
+    expect(weightedSum(individual)).toBe(6);
+  });
+
+  it("returns sum of the individual fitness (multiple objectives)", () => {
+    const individual = new Individual({ genotype: new List([]) });
+    individual.evaluate(() => [
+      new Objective(2, 2),
+      new Objective(-3, 3),
+      new Objective(7, 1),
+    ]);
+
+    expect(weightedSum(individual)).toBe(2);
+  });
+
+  it("returns 0 if the individual does not have any objectives", () => {
+    const individual = new Individual({ genotype: new List([]) });
+
+    expect(weightedSum(individual)).toBe(0);
+  });
+});
