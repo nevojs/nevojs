@@ -213,7 +213,7 @@ export function inversion<T = any>(settings?: AlternatePartSettings<T>): Mutatio
  * @param settings
  * @category mutation
  */
-export function swap<T>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
+export function swap<T = any>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
   return alternatePart(genes => {
     const start = 0;
     const end = genes.length - 1;
@@ -228,7 +228,7 @@ export function swap<T>(settings?: AlternatePartSettings<T>): MutationMethod<T[]
  * @param settings
  * @category mutation
  */
-export function scramble<T>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
+export function scramble<T = any>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
   return alternatePart(shuffle, settings);
 }
 
