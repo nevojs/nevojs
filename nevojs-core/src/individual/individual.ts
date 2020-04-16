@@ -297,7 +297,7 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
       throw new TypeError();
     }
 
-    const x = this.state.computeData();
+    const x = this.state.computed();
     const state = settings.state
       ? settings.state(x)
       : x;
