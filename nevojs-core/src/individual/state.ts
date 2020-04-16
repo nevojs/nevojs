@@ -5,26 +5,34 @@ type StateData<T extends SerializableObject> = {
 }
 
 export class State<T extends SerializableObject> {
-  private bindings: Partial<StateData<T>> = {};
+  private readonly bindings: Partial<StateData<T>> = {};
 
-  public constructor(public readonly data: T) {}
+  public constructor(data: T) {
+    const stateData: Partial<StateData<T>> = {};
 
-  public bind(data: Partial<StateData<T>>): void {
-    this.bindings = Object.assign(this.bindings, data);
+    for (const [key, value] of Object.entries(data)) {
+      stateData[key as keyof T] = () => value as T[keyof T];
+    }
+
+    this.bind(stateData);
   }
 
-  public computeData(): T {
+  public bind(data: Partial<StateData<T>>): void {
+    Object.assign(this.bindings, data);
+  }
+
+  public computed(): T {
     return Object.fromEntries(
       Object.entries(this.bindings).map(([property, func]) => [property, func()])
     );
   }
 
   public clone(): State<T> {
-    return new State(this.computeData());
+    return new State(this.computed());
   }
 
   public serialize(): T {
-    return serialize(this.computeData());
+    return serialize(this.computed());
   }
 
   public toJSON(): string {
