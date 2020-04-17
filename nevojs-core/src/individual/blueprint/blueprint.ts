@@ -21,7 +21,7 @@ import {
   SerializedIndividual,
 } from "../individual";
 import { IndividualDefaults } from "../individual_defaults";
-import { Resolved } from "../../util";
+import { isPositiveInt, Resolved } from "../../util";
 import { SerializableObject } from "../../serialization";
 import { State } from "../state";
 import { UnresolvedGenotype } from "../data";
@@ -80,6 +80,14 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
 
     const defaultPhenotypeFunc = () => undefined as unknown as P;
 
+    if (typeof settings.genotype !== "function") {
+      throw new TypeError();
+    }
+
+    if (settings.phenotype !== undefined && typeof settings.phenotype !== "function") {
+      throw new TypeError();
+    }
+
     this.genotypeFunc = settings.genotype;
     this.phenotypeFunc = settings.phenotype ?? defaultPhenotypeFunc;
   }
@@ -90,6 +98,22 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
   public spawn(
     settings: BlueprintCreationSettings<G, P> = {},
   ): BlueprintSpawnOutput<G, P> {
+    if (typeof settings !== "object") {
+      throw new TypeError();
+    }
+
+    if (settings.genotype !== undefined && typeof settings.genotype !== "function") {
+      throw new TypeError();
+    }
+
+    if (settings.phenotype !== undefined && typeof settings.phenotype !== "function") {
+      throw new TypeError();
+    }
+
+    if (settings.state !== undefined && typeof settings.state !== "function") {
+      throw new TypeError();
+    }
+
     const arg = settings.arg ? settings.arg() : undefined;
     const genotype = settings.genotype
       ? settings.genotype(arg)
@@ -125,6 +149,10 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaul
     amount: number,
     settings?: BlueprintCreationSettings<G, P>,
   ): BlueprintSpawnOutput<G, P>[] {
+    if (!isPositiveInt(amount)) {
+      throw new TypeError();
+    }
+
     const individuals: BlueprintSpawnOutput<G, P>[] = new Array(amount);
     let async = false;
 
