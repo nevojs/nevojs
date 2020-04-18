@@ -172,9 +172,9 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
    *
    * @param func
    */
-  public evaluate<T extends void | Promise<void>>(
+  public evaluate(
     func: EvaluationFunction<G, P> = this.getDefault(Default.Evaluation),
-  ): T {
+  ): void | Promise<void> {
     if (typeof func !== "function") {
       throw new TypeError();
     }
@@ -183,8 +183,8 @@ export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, 
     const assignEvaluation = (data: EvaluationData) => this.setObjectives(toArray(data));
 
     return evaluation instanceof Promise
-      ? evaluation.then(assignEvaluation) as T
-      : assignEvaluation(evaluation) as T;
+      ? evaluation.then(assignEvaluation)
+      : assignEvaluation(evaluation);
   }
 
   /**
