@@ -59,7 +59,7 @@ export { Genotype, AnyGenotype, UnresolvedGenotype } from "./individual/data";
 export { List, ListGenerateFunction } from "./genotype/list";
 
 // group
-export { Group, GroupData, GroupCloneSettings, GroupCrowdSettings, GroupConstructorSettings } from "./individual/group";
+export { Group, GroupData, GroupCloneSettings, GroupCrowdSettings } from "./individual/group";
 
 export { $Evaluation, $Genotype, $AsyncBlueprint, $Blueprint, $Crossover, $Data, $Group, $Individual, $Mutation, $Phenotype, $SyncBlueprint } from "./util_types";
 

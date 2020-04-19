@@ -17,11 +17,12 @@
 
 import { AnyIndividual, Individual, IndividualConstructorSettings } from "./individual/individual";
 import { Blueprint, BlueprintConstructorSettings } from "./individual/blueprint/blueprint";
-import { Group, GroupConstructorSettings } from "./individual/group";
+import { Group } from "./individual/group";
 import { AnyGenotype, UnresolvedGenotype } from "./individual/data";
 import { List } from "./genotype/list";
 import { Objective } from "./individual/evaluation/objective";
 import { ResolvedBlueprint } from "./individual/blueprint/blueprint_aliases";
+import { CollectionConstructorSettings } from "./collection";
 
 /**
  *
@@ -59,7 +60,7 @@ export function list<T>(data: T[]): List<T> {
  * @param data
  * @category creation
  */
-export function group<I extends AnyIndividual>(data: I[] | GroupConstructorSettings<I> = {}): Group<I> {
+export function group<I extends AnyIndividual>(data: I[] | CollectionConstructorSettings<I> = {}): Group<I> {
   if (Array.isArray(data)) {
     return new Group({ members: data });
   }

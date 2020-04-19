@@ -35,14 +35,6 @@ export type GroupData<I extends AnyIndividual> = I | I[] | Group<I>;
 /**
  *
  */
-export interface GroupConstructorSettings<I extends AnyIndividual> {
-  members?: I[];
-  size?: number;
-}
-
-/**
- *
- */
 export interface GroupCloneSettings {
   deep?: boolean;
 }
@@ -58,21 +50,6 @@ export interface GroupCrowdSettings {
  *
  */
 export class Group<I extends AnyIndividual> extends Collection<I> {
-  /**
-   *
-   * @param settings
-   */
-  public constructor(settings: Partial<GroupConstructorSettings<I>> = {}) {
-    super(settings);
-
-    this._members = settings.members ?? [];
-    this._size = settings.size ?? this._members.length;
-
-    if (this.size === Infinity) {
-      throw new TypeError();
-    }
-  }
-
   /**
    *
    */
