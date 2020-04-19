@@ -66,10 +66,6 @@ export class Collection<T> {
   public constructor(settings: CollectionConstructorSettings<T> = {}) {
     this._members = settings.members ?? [];
     this._size = settings.size ?? this._members.length;
-
-    if (this.size === Infinity) {
-      throw new TypeError();
-    }
   }
 
   /**
