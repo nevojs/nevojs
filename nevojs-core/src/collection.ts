@@ -65,7 +65,9 @@ export class Collection<T> {
    */
   public constructor(settings: CollectionConstructorSettings<T> = {}) {
     this._members = settings.members ?? [];
-    this._size = settings.size ?? this._members.length;
+
+    const defaultSize = this._members.length ?? Infinity;
+    this._size = settings.size ?? defaultSize;
   }
 
   /**
