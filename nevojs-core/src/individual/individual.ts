@@ -29,7 +29,7 @@ import { $Data } from "../util_types";
 /**
  *
  */
-export type PhenotypeFunction<G extends AnyGenotype, P> = (genotype: G, state: any) => P;
+export type PhenotypeFunction<G extends AnyGenotype, P> = (genotype: G, state: State<any>) => P;
 
 /**
  *
