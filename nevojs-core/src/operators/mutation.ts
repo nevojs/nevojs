@@ -202,10 +202,11 @@ export function alternatePart<T>(
 
 /**
  *
- * @param gene
  * @category mutation
  */
-export const flip: MutationMethod<number> = gene => Number(!gene);
+export function flip(): MutationMethod<number> {
+  return gene => Number(!gene);
+}
 
 /**
  *
