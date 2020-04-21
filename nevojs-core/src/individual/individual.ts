@@ -71,7 +71,7 @@ export interface IndividualSerializationSettings<G extends AnyGenotype, P> {
  */
 export interface IndividualDeserializationSettings<G extends AnyGenotype, P> {
   genotype: (data: any) => G;
-  phenotype?: (genotype: G, state: any) => P;
+  phenotype?: PhenotypeFunction<G, P>;
   state?: (data: SerializableObject) => any;
 }
 
