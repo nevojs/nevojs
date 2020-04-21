@@ -96,14 +96,26 @@ export interface MutationBoundSettings {
   max?: number;
 }
 
+function boundValue(gene: number, settings: MutationBoundSettings): number {
+  const min = settings.min ?? -Infinity;
+  const max = settings.max ?? Infinity;
+
+  gene = Math.max(gene, min);
+  gene = Math.min(gene, max);
+
+  return gene;
+}
+
 /**
  *
  * @param func
  * @param settings
  * @category mutation
  */
+export function bound(func: MutationMethod<number>, settings?: MutationBoundSettings): MutationMethod<number>;
+export function bound(settings: MutationBoundSettings): MutationMethod<number>;
 export function bound(
-  func: MutationMethod<number>,
+  funcOrSettings: MutationMethod<number> | MutationBoundSettings,
   settings: MutationBoundSettings = {},
 ): MutationMethod<number> {
   const min = settings.min ?? -Infinity;
@@ -113,13 +125,9 @@ export function bound(
     throw new TypeError();
   }
 
-  return gene => {
-    let value = func(gene) ?? gene;
-    value = Math.max(value, min);
-    value = Math.min(value, max);
-
-    return value;
-  };
+  return typeof funcOrSettings === "function"
+    ? gene => boundValue(funcOrSettings(gene), settings)
+    : gene => boundValue(gene, funcOrSettings);
 }
 
 /**
