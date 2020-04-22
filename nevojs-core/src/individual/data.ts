@@ -18,12 +18,14 @@
 import { CrossoverMethod } from "../operators/crossover";
 import { MutationMethod } from "../operators/mutation";
 
+export type GenotypeCloneFunction<D> = (data: D) => D;
+
 /**
  *
  */
 export interface Genotype<D> {
   mutate(method: MutationMethod<D>): void;
-  clone(func?: (data: D) => D): Genotype<D>;
+  clone(func?: GenotypeCloneFunction<D>): Genotype<D>;
   __serialize(): unknown;
   data(): D;
   offspring(partners: Genotype<D>[], method: CrossoverMethod<D>): Genotype<D>[];

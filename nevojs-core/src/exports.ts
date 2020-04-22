@@ -55,7 +55,7 @@ export { EvaluationFunction, Evaluation } from "./individual/evaluation/evaluati
 export { nonDominatedSort, crowdingDistance, rank } from "./individual/multiobjective_optimization/multiobjective_optimization";
 
 // genotype
-export { Genotype, AnyGenotype, UnresolvedGenotype } from "./individual/data";
+export { Genotype, GenotypeCloneFunction, AnyGenotype, UnresolvedGenotype } from "./individual/data";
 export { List, ListGenerateFunction } from "./genotype/list";
 
 // group
