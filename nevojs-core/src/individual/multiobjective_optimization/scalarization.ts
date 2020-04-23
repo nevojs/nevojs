@@ -28,4 +28,4 @@ export type ScalarizationMethod<I extends AnyIndividual = AnyIndividual> = (indi
  * @param individual
  * @category scalarization
  */
-export const weightedSum: ScalarizationMethod = individual => sum(individual.objectives().map(objective => objective.fitness()));
+export const weightedSum: ScalarizationMethod = individual => sum(individual.fitness());
