@@ -338,7 +338,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    * @param settings
    */
   public toJSON(
-    settings: IndividualSerializationSettings<G, P> = {},
+    settings?: IndividualSerializationSettings<G, P>,
   ): string {
     return JSON.stringify(this.serialize(settings));
   }
