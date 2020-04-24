@@ -296,7 +296,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    * @param settings
    */
   public serialize(
-    settings: IndividualSerializationSettings<G, P> = {},
+    settings: IndividualSerializationSettings<G, P> = this.getDefault(Default.Serialization) ?? {},
   ): SerializedIndividual {
     const check = settings.check ?? true;
 
