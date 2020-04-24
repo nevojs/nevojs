@@ -16,15 +16,23 @@
  */
 
 import {
-  Individual,
+  Individual, IndividualDefaultValues,
   IndividualDeserializationSettings, PhenotypeFunction, ResolvedIndividual,
   SerializedIndividual,
 } from "../individual";
-import { IndividualDefaults } from "../individual_defaults";
 import { isPositiveInt, Resolved } from "../../util";
 import { SerializableObject } from "../../serialization";
 import { State } from "../state";
-import { UnresolvedGenotype } from "../data";
+import { AnyGenotype, UnresolvedGenotype } from "../data";
+import { Default, DefaultProperties } from "../default_properties";
+
+/**
+ *
+ */
+export type BlueprintDefaultValues<G extends AnyGenotype, P> = {
+  [Default.Deserialization]: IndividualDeserializationSettings<G, P>;
+  [unknownDefault: string]: unknown;
+};
 
 /**
  *
@@ -60,7 +68,7 @@ type BlueprintSpawnOutput<G extends UnresolvedGenotype, P> = ResolvedIndividual<
 /**
  *
  */
-export class Blueprint<G extends UnresolvedGenotype, P> extends IndividualDefaults<Resolved<G>, P> {
+export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultProperties<IndividualDefaultValues<Resolved<G>, P> & BlueprintDefaultValues<Resolved<G>, P>> {
   /**
    *
    */

@@ -21,10 +21,10 @@ import { Objective, SerializedObjective } from "./evaluation/objective";
 import { Resolved, toArray } from "../util";
 import { deserialize, isSerializable, Serializable, SerializableObject, serialize } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
-import { IndividualDefaults, Default } from "./individual_defaults";
+import { Default, DefaultProperties } from "./default_properties";
 import { MutationMethod } from "../operators/mutation";
 import { State } from "./state";
-import { $Data } from "../util_types";
+import { $Crossover, $Data, $Mutation } from "../util_types";
 
 /**
  *
@@ -88,7 +88,19 @@ export type AnyIndividual = Individual<any, any>;
 /**
  *
  */
-export class Individual<G extends AnyGenotype, P> extends IndividualDefaults<G, P> {
+export type IndividualDefaultValues<G extends AnyGenotype, P> = {
+  [Default.Evaluation]: EvaluationFunction<G, P>;
+  [Default.Mutation]: $Mutation<G>;
+  [Default.Crossover]: $Crossover<G>;
+  [Default.Cloning]: IndividualCloneSettings<G, P>;
+  [Default.Serialization]: IndividualSerializationSettings<G, P>;
+  [unknownDefault: string]: unknown;
+};
+
+/**
+ *
+ */
+export class Individual<G extends AnyGenotype, P> extends DefaultProperties<IndividualDefaultValues<G, P>> {
   /**
    *
    * @param serialized

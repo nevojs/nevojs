@@ -26,12 +26,12 @@ import { AnyGenotype } from "../data";
 import { List } from "../../genotype/list";
 import { Individual, SerializedIndividual } from "../individual";
 import { $Individual } from "../../util_types";
-import { Default } from "../individual_defaults";
 import { Objective } from "../evaluation/objective";
 import { uniform } from "../../operators/crossover";
 import { swap } from "../../operators/mutation";
 import { State } from "../state";
 import { SerializableObject } from "../../serialization";
+import { Default } from "../default_properties";
 
 describe("Blueprint", () => {
   describe("constructor", () => {
