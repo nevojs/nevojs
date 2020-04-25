@@ -5,11 +5,11 @@ type StateData<T extends SerializableObject> = {
 }
 
 export class State<T extends SerializableObject> {
-  public readonly initial: T;
+  public readonly initial: Partial<T>;
 
   private readonly bindings: Partial<StateData<T>> = {};
 
-  public constructor(data: T) {
+  public constructor(data: Partial<T>) {
     this.initial = data;
 
     const stateData: Partial<StateData<T>> = {};
@@ -32,7 +32,7 @@ export class State<T extends SerializableObject> {
   }
 
   public clone(): State<T> {
-    return new State(this.computed());
+    return new State(this.computed()) as State<T>;
   }
 
   public serialize(): T {
