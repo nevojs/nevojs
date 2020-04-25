@@ -74,18 +74,18 @@ export function group<I extends AnyIndividual>(data: I[] | CollectionConstructor
  * @param weight
  * @category creation
  */
-export const scale = (value: number, weight: number) => new Objective(value, weight);
+export const objective = (value: number, weight: number) => new Objective(value, weight);
 
 /**
  *
  * @param value
  * @category creation
  */
-export const minimize = (value: number) => scale(value, -1);
+export const minimize = (value: number) => objective(value, -1);
 
 /**
  *
  * @param value
  * @category creation
  */
-export const maximize = (value: number) => scale(value, 1);
+export const maximize = (value: number) => objective(value, 1);
