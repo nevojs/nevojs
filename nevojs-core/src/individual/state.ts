@@ -5,9 +5,13 @@ type StateData<T extends SerializableObject> = {
 }
 
 export class State<T extends SerializableObject> {
+  public readonly initial: T;
+
   private readonly bindings: Partial<StateData<T>> = {};
 
   public constructor(data: T) {
+    this.initial = data;
+
     const stateData: Partial<StateData<T>> = {};
 
     for (const [key, value] of Object.entries(data)) {
