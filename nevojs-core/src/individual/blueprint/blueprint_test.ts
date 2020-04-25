@@ -24,7 +24,7 @@ import {
 } from "./blueprint";
 import { AnyGenotype } from "../data";
 import { List } from "../../genotype/list";
-import { Individual, SerializedIndividual } from "../individual";
+import { Individual, IndividualSerializationSettings, SerializedIndividual } from "../individual";
 import { $Individual } from "../../util_types";
 import { Objective } from "../evaluation/objective";
 import { uniform } from "../../operators/crossover";
@@ -241,6 +241,21 @@ describe("Blueprint", () => {
       expect(individual.getDefault(Default.Crossover)).toBe(crossover);
     });
 
+    it("assigns a default serialization settings to the individual", () => {
+      const blueprint = new Blueprint({
+        genotype: () => new List([1, 2, 3]),
+      });
+
+      const settings: IndividualSerializationSettings<List<number>, unknown> = {
+        genotype: data => data,
+      };
+
+      blueprint.setDefault(Default.Serialization, settings);
+
+      const individual = blueprint.spawn() as $Individual<typeof blueprint>;
+      expect(individual.getDefault(Default.Serialization)).toBe(settings);
+    });
+
     it("properly overrides genotype using given function", () => {
       fc.assert(fc.property(fc.array(fc.anything()), data => {
         const blueprint = new Blueprint({
@@ -428,6 +443,23 @@ describe("Blueprint", () => {
 
         expect(deserialized.phenotype.value).toBe(value);
       }));
+    });
+
+    it("uses a default settings if specified", () => {
+      const blueprint = new Blueprint({
+        genotype: () => new List([1, 2, 3]),
+      });
+
+      blueprint.setDefault(Default.Deserialization, {
+        genotype: data => new List(data),
+      });
+
+      const individual = blueprint.spawn() as $Individual<typeof blueprint>;
+      const serialized = individual.serialize();
+
+      const deserialized = blueprint.deserialize(serialized);
+
+      expect(deserialized.genotype).toBeInstanceOf(List);
     });
   });
 

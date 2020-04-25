@@ -16,8 +16,11 @@
  */
 
 import {
-  Individual, IndividualDefaultValues,
-  IndividualDeserializationSettings, PhenotypeFunction, ResolvedIndividual,
+  Individual,
+  IndividualDefaultValues,
+  IndividualDeserializationSettings,
+  PhenotypeFunction,
+  ResolvedIndividual,
   SerializedIndividual,
 } from "../individual";
 import { isPositiveInt, Resolved } from "../../util";
@@ -187,7 +190,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
    */
   public deserialize(
     serialized: SerializedIndividual,
-    settings: IndividualDeserializationSettings<Resolved<G>, P>,
+    settings: IndividualDeserializationSettings<Resolved<G>, P> = this.getDefault(Default.Deserialization) ?? {},
   ): ResolvedIndividual<G, P> {
     settings.phenotype = settings.phenotype ?? this.phenotypeFunc;
 
@@ -204,7 +207,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
    */
   public fromJSON(
     data: string,
-    settings: IndividualDeserializationSettings<Resolved<G>, P>,
+    settings?: IndividualDeserializationSettings<Resolved<G>, P>,
   ): ResolvedIndividual<G, P> {
     return this.deserialize(JSON.parse(data), settings);
   }
