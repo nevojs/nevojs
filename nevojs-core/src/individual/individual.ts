@@ -251,7 +251,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    * @param settings
    */
   public clone(
-    settings: IndividualCloneSettings<G, P> = {}
+    settings: IndividualCloneSettings<G, P> = this.getDefault(Default.Cloning) ?? {},
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = this.phenotypeFunc;
