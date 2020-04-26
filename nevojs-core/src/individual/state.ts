@@ -31,8 +31,14 @@ export class State<T extends SerializableObject> {
     );
   }
 
-  public clone(): State<T> {
-    return new State(this.computed()) as State<T>;
+  public clone(
+    func?: (data: any) => any,
+  ): State<T> {
+    const data = func ?
+      func(this.computed())
+      : this.computed();
+
+    return new State(data) as State<T>;
   }
 
   public serialize(): T {
