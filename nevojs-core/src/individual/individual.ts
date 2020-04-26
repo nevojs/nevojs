@@ -45,6 +45,7 @@ export interface IndividualConstructorSettings<G extends AnyGenotype, P> {
  */
 export interface IndividualCloneSettings<G extends AnyGenotype, P> {
   genotype?: (data: $Data<G>) => $Data<G>;
+  phenotype?: PhenotypeFunction<G, P>;
   state?: (state: any) => any;
 }
 
@@ -254,7 +255,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     settings: IndividualCloneSettings<G, P> = this.getDefault(Default.Cloning) ?? {},
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
-    const phenotype = this.phenotypeFunc;
+    const phenotype = settings.phenotype ?? this.phenotypeFunc;
     const state = this.state.clone();
 
     const individual = new Individual({ genotype, phenotype, state });
