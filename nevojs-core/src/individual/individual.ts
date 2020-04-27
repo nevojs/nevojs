@@ -172,6 +172,18 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   public constructor(settings: IndividualConstructorSettings<G, P>) {
     super();
 
+    if (settings.genotype === undefined || settings.genotype === null) {
+      throw new TypeError();
+    }
+
+    if (settings.phenotype !== undefined && typeof settings.phenotype !== "function") {
+      throw new TypeError();
+    }
+
+    if (settings.state !== undefined && !(settings.state instanceof State)) {
+      throw new TypeError();
+    }
+
     const state = settings.state ?? new State({});
 
     this.genotype = settings.genotype;
@@ -215,7 +227,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     const objective = this._objectives[index];
 
     if (objective === undefined) {
-      throw new TypeError("");
+      throw new RangeError("");
     }
 
     return objective;
@@ -256,7 +268,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
-    const state = this.state.clone();
+    const state = this.state.clone(settings.state);
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(this.objectives().map(objective => objective.clone()));
@@ -285,7 +297,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     const objectives = this.objectives();
 
     if (objectives.length !== rival.objectives().length) {
-      throw new TypeError();
+      throw new Error();
     }
 
     return objectives.every((objective, i) => objective.fitness() >= rival.objective(i).fitness())
