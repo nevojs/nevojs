@@ -64,7 +64,6 @@ export interface SerializedIndividual {
 export interface IndividualSerializationSettings<G extends AnyGenotype, P> {
   genotype?: (data: $Data<G>) => Serializable;
   state?: (data: any) => SerializableObject;
-  check?: boolean;
 }
 
 /**
@@ -311,8 +310,6 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   public serialize(
     settings: IndividualSerializationSettings<G, P> = this.getDefault(Default.Serialization) ?? {},
   ): SerializedIndividual {
-    const check = settings.check ?? true;
-
     const data = this.genotype.__serialize() as $Data<G>;
     const genotype = settings.genotype
       ? settings.genotype(data)
@@ -327,18 +324,16 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
       ? settings.state(x)
       : x;
 
-    if (check) {
-      if (!isSerializable(genotype)) {
-        throw new TypeError("cannot serialize");
-      }
+    if (!isSerializable(genotype)) {
+      throw new TypeError("cannot serialize");
+    }
 
-      if (typeof state !== "object" || state === null) {
-        throw new TypeError();
-      }
+    if (typeof state !== "object" || state === null) {
+      throw new TypeError();
+    }
 
-      if (!isSerializable(state)) {
-        throw new TypeError("cannot serialize");
-      }
+    if (!isSerializable(state)) {
+      throw new TypeError("cannot serialize");
     }
 
     const objectives = this.objectives().map(objective => objective.serialize());
