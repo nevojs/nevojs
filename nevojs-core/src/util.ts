@@ -144,11 +144,11 @@ export function inspectObjectRecursively<T extends { constructor: Function }>(
 /**
 * @hidden
 */
-export function mapObjectValuesRecursively<T>(
+export function mapObjectValuesRecursively<T extends { constructor: Function }>(
   data: T,
   func: (value: unknown) => any,
 ): any {
-  if (typeof data !== "object") {
+  if (data === undefined || data === null || ![Array, Object].includes(data.constructor as any)) {
     return func(data);
   }
 
