@@ -126,11 +126,11 @@ export function randomGauss(mean: number = 0, standardDeviation: number = 1): nu
 /**
  * @hidden
  */
-export function inspectObjectRecursively<T>(
+export function inspectObjectRecursively<T extends { constructor: Function }>(
   data: T,
   func: (value: unknown) => boolean,
 ): boolean {
-  if (typeof data !== "object") {
+  if (data === undefined || data === null || ![Array, Object].includes(data.constructor as any)) {
     return func(data);
   }
 
