@@ -18,8 +18,15 @@
 import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
 import { AnyGenotype, UnresolvedGenotype } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
-import { Resolved, toArray } from "../util";
-import { deserialize, isSerializable, Serializable, SerializableObject, serialize } from "../serialization";
+import { isPositiveInt, Resolved, toArray } from "../util";
+import {
+  deserialize,
+  isSerializable,
+  isSerializableObjectLiteral,
+  Serializable,
+  SerializableObject,
+  serialize
+} from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { Default, DefaultProperties } from "./default_properties";
 import { MutationMethod } from "../operators/mutation";
@@ -38,6 +45,12 @@ export interface IndividualConstructorSettings<G extends AnyGenotype, P> {
   genotype: G;
   phenotype?: PhenotypeFunction<G, P>;
   state?: State<any>;
+}
+
+export interface IndividualOffspringSettings<G extends AnyGenotype, P> {
+  genotype?: G;
+  phenotype?: PhenotypeFunction<G, P>;
+  state?: () => any;
 }
 
 /**
@@ -310,6 +323,10 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   public serialize(
     settings: IndividualSerializationSettings<G, P> = this.getDefault(Default.Serialization) ?? {},
   ): SerializedIndividual {
+    if (settings.genotype !== undefined && typeof settings.genotype !== "function") {
+      throw new TypeError();
+    }
+
     const data = this.genotype.__serialize() as $Data<G>;
     const genotype = settings.genotype
       ? settings.genotype(data)
@@ -325,15 +342,15 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
       : x;
 
     if (!isSerializable(genotype)) {
-      throw new TypeError("cannot serialize");
+      throw new Error("cannot serialize");
     }
 
     if (typeof state !== "object" || state === null) {
-      throw new TypeError();
+      throw new Error();
     }
 
-    if (!isSerializable(state)) {
-      throw new TypeError("cannot serialize");
+    if (!isSerializableObjectLiteral(state)) {
+      throw new Error("cannot serialize");
     }
 
     const objectives = this.objectives().map(objective => objective.serialize());
@@ -360,7 +377,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   public offspring(
     partners: Individual<G, P>[],
     method: CrossoverMethod<$Data<G>> = this.getDefault(Default.Crossover),
-    settings: Partial<IndividualConstructorSettings<G, P>> = {},
+    settings: IndividualOffspringSettings<G, P> = {},
   ): Individual<G, P>[] {
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
 
@@ -372,7 +389,9 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     const childrenGenotypes = this.genotype.offspring(partnerGenotypes, method) as G[];
 
     return childrenGenotypes.map(genotype => {
-      const state = settings.state;
+      const state = settings.state !== undefined
+        ? new State(settings.state())
+        : undefined;
 
       const individual = new Individual({ genotype, phenotype, state });
       this.applyDefaults(individual);
@@ -392,8 +411,12 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     amount: number,
     partners: Individual<G, P>[],
     method?: CrossoverMethod<$Data<G>>,
-    settings?: Partial<IndividualConstructorSettings<G, P>>,
+    settings?: IndividualOffspringSettings<G, P>,
   ): Individual<G, P>[] {
+    if (!isPositiveInt(amount)) {
+      throw new TypeError();
+    }
+
     const children: Individual<G, P>[] = [];
 
     while (amount > children.length) {

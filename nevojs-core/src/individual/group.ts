@@ -17,7 +17,7 @@
 
 import {
   AnyIndividual,
-  Individual, IndividualConstructorSettings,
+  Individual, IndividualOffspringSettings,
 } from "./individual";
 import { $Genotype, $Phenotype, $Data } from "../util_types";
 import { merge, choose } from "../util";
@@ -166,7 +166,7 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
   public crossover(
     amount: number,
     method?: CrossoverMethod<$Data<$Genotype<I>>>,
-    settings?: Partial<IndividualConstructorSettings<$Genotype<I>, $Phenotype<I>>>,
+    settings?: IndividualOffspringSettings<$Genotype<I>, $Phenotype<I>>,
   ): I[] {
     const [parent, ...partners] = this.members();
     return parent.crossover(amount, partners, method as any, settings) as I[];
@@ -179,7 +179,7 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
    */
   public offspring(
     method?: CrossoverMethod<$Data<$Genotype<I>>>,
-    settings?: Partial<IndividualConstructorSettings<$Genotype<I>, $Phenotype<I>>>,
+    settings?: IndividualOffspringSettings<$Genotype<I>, $Phenotype<I>>,
   ): I[] {
     const [parent, ...partners] = this.members() as Individual<$Genotype<I>, $Phenotype<I>>[];
     return parent.offspring(partners, method, settings) as I[];
