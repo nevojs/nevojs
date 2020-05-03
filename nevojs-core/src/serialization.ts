@@ -20,7 +20,7 @@ import { inspectObjectRecursively, mapObjectValuesRecursively } from "./util";
 /**
  * @hidden
  */
-export type SerializableValue = number | string | boolean | undefined | SerializableValue[];
+export type SerializableValue = number | string | boolean | undefined | null | SerializableValue[];
 
 /**
  * @hidden
@@ -41,7 +41,20 @@ export type Serializable = SerializableObject | SerializableValue | Serializable
  * @param data
  */
 export function isSerializable(data: any): data is Serializable {
-  return inspectObjectRecursively(data, property => ["string", "number", "boolean", "undefined"].includes(typeof property));
+  return inspectObjectRecursively(data, property => {
+    return ["string", "number", "boolean", "undefined"].includes(typeof property) || property === null;
+  });
+}
+
+/**
+ * @hidden
+ * @param data
+ */
+export function isSerializableObjectLiteral(data: any): data is SerializableObject {
+  return data !== undefined &&
+    data !== null &&
+    (data as any).constructor === Object &&
+    isSerializable(data);
 }
 
 export enum SerializedValueIdentifier {
