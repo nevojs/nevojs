@@ -22,9 +22,7 @@ import { isPositiveInt, Resolved, toArray } from "../util";
 import {
   deserialize,
   isSerializable,
-  isSerializableObjectLiteral,
-  Serializable,
-  SerializableObject,
+  Serializable, SerializableObject,
   serialize
 } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
@@ -47,10 +45,13 @@ export interface IndividualConstructorSettings<G extends AnyGenotype, P> {
   state?: State<any>;
 }
 
+/**
+ *
+ */
 export interface IndividualOffspringSettings<G extends AnyGenotype, P> {
   genotype?: G;
   phenotype?: PhenotypeFunction<G, P>;
-  state?: () => any;
+  state?: (parents: Individual<G, P>[]) => any;
 }
 
 /**
@@ -59,7 +60,6 @@ export interface IndividualOffspringSettings<G extends AnyGenotype, P> {
 export interface IndividualCloneSettings<G extends AnyGenotype, P> {
   genotype?: (data: $Data<G>) => $Data<G>;
   phenotype?: PhenotypeFunction<G, P>;
-  state?: (state: any) => any;
 }
 
 /**
@@ -67,7 +67,7 @@ export interface IndividualCloneSettings<G extends AnyGenotype, P> {
  */
 export interface SerializedIndividual {
   genotype: Serializable;
-  state: any;
+  state: SerializableObject;
   objectives: SerializedObjective[];
 }
 
@@ -76,7 +76,7 @@ export interface SerializedIndividual {
  */
 export interface IndividualSerializationSettings<G extends AnyGenotype, P> {
   genotype?: (data: $Data<G>) => Serializable;
-  state?: (data: any) => SerializableObject;
+  state?: (data: any) => any;
 }
 
 /**
@@ -85,7 +85,7 @@ export interface IndividualSerializationSettings<G extends AnyGenotype, P> {
 export interface IndividualDeserializationSettings<G extends AnyGenotype, P> {
   genotype: (data: any) => G;
   phenotype?: PhenotypeFunction<G, P>;
-  state?: (data: SerializableObject) => any;
+  state?: (data: any) => any;
 }
 
 /**
@@ -123,18 +123,12 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     serialized: SerializedIndividual,
     settings: IndividualDeserializationSettings<G, P>,
   ): Individual<G, P> {
-    const deserialized = deserialize(serialized) as SerializedIndividual;
-
-    const genotype = settings.genotype(deserialized.genotype);
+    const genotype = settings.genotype(deserialize(serialized.genotype));
     const phenotype = settings.phenotype;
-
-    const state = new State(settings.state
-      ? settings.state(deserialized.state)
-      : deserialized.state);
+    const state = State.deserialize(serialized.state, settings.state);
+    const objectives = serialized.objectives.map(objective => Objective.deserialize(objective));
 
     const individual = new Individual({ genotype, phenotype, state });
-
-    const objectives = deserialized.objectives.map(Objective.deserialize);
     individual.setObjectives(objectives);
 
     return individual;
@@ -280,7 +274,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
-    const state = this.state.clone(settings.state);
+    const state = this.state.clone();
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(this.objectives().map(objective => objective.clone()));
@@ -328,34 +322,16 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     }
 
     const data = this.genotype.__serialize() as $Data<G>;
-    const genotype = settings.genotype
-      ? settings.genotype(data)
-      : data;
 
-    if (settings.state !== undefined && typeof settings.state !== "function") {
-      throw new TypeError();
-    }
-
-    const x = this.state.computed();
-    const state = settings.state
-      ? settings.state(x)
-      : x;
+    const genotype = serialize(settings.genotype ? settings.genotype(data) : data);
+    const state = this.state.serialize(settings.state);
+    const objectives = this.objectives().map(objective => objective.serialize());
 
     if (!isSerializable(genotype)) {
       throw new Error("cannot serialize");
     }
 
-    if (typeof state !== "object" || state === null) {
-      throw new Error();
-    }
-
-    if (!isSerializableObjectLiteral(state)) {
-      throw new Error("cannot serialize");
-    }
-
-    const objectives = this.objectives().map(objective => objective.serialize());
-
-    return serialize({ genotype, state, objectives });
+    return { genotype, state, objectives };
   }
 
   /**
@@ -390,7 +366,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
 
     return childrenGenotypes.map(genotype => {
       const state = settings.state !== undefined
-        ? new State(settings.state())
+        ? new State(settings.state([this, ...partners]))
         : undefined;
 
       const individual = new Individual({ genotype, phenotype, state });
