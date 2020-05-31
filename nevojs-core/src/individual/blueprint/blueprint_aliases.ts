@@ -42,7 +42,7 @@ export type AsyncBlueprint<G extends AnyGenotype, P> = UnresolvedBlueprint<G, P>
 /**
  *
  */
-export type AnyBlueprint<G extends AnyGenotype, P> = Blueprint<G, P> | SyncBlueprint<G, P> | AsyncBlueprint<G, P>;
+export type AnyBlueprint<G extends AnyGenotype = AnyGenotype, P = unknown> = Blueprint<G, P> | SyncBlueprint<G, P> | AsyncBlueprint<G, P>;
 
 /**
  *
