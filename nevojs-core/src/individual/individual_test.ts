@@ -66,7 +66,7 @@ describe("Individual", () => {
         genotype: data => new List(data),
       });
 
-      expect(individual.state.initial).toEqual({
+      expect(individual.state.computeAll()).toEqual({
         a: 1,
         b: 2,
         c: 3,
@@ -80,7 +80,7 @@ describe("Individual", () => {
         state: () => ({ a: 10, b: 20, c: 30 }),
       });
 
-      expect(individual.state.initial).toEqual({
+      expect(individual.state.computeAll()).toEqual({
         a: 10,
         b: 20,
         c: 30,
@@ -113,7 +113,7 @@ describe("Individual", () => {
       const individual = Individual.deserialize(serialized, { genotype: data => new List(data) });
 
       expect(individual.genotype.data()).toEqual([1, 2, NaN, undefined]);
-      expect(individual.state.initial).toEqual({ foo: Infinity });
+      expect(individual.state.computeAll()).toEqual({ foo: Infinity });
 
       expect(individual.objective(0).value).toBe(Infinity);
       expect(individual.objective(0).weight).toBe(1);
@@ -197,7 +197,7 @@ describe("Individual", () => {
 
     it("throws a TypeError if the state is specified but is not an instance of State", () => {
       fc.assert(fc.property(fc.anything(), (state: any) => {
-        fc.pre(!(state instanceof State) && state !== undefined);
+        fc.pre(state !== undefined && !(state instanceof State));
 
         expect(() => {
           new Individual({ genotype: new List([]), state });
@@ -530,37 +530,7 @@ describe("Individual", () => {
         const copy = individual.clone();
 
         expect(copy.state).not.toBe(individual.state);
-        expect(copy.state.computed()).toEqual(state.computed());
-      }));
-    });
-
-    it("clones the state using a function if passed", () => {
-      fc.assert(fc.property(fc.integer(), value => {
-        const state = new State({ value });
-        const genotype = new List([]);
-        const individual = new Individual({ genotype, state });
-
-        const copy = individual.clone({
-          state: data => ({ value: data.value + 1 }),
-        });
-
-        expect(copy.state.computed().value).toEqual(individual.state.computed().value + 1);
-      }));
-    });
-
-    it("clones the state using a default function if specified", () => {
-      fc.assert(fc.property(fc.integer(), value => {
-        const state = new State({ value });
-        const genotype = new List([]);
-        const individual = new Individual({ genotype, state });
-
-        individual.setDefault(Default.Cloning, {
-          state: data => ({ value: data.value + 1 }),
-        });
-
-        const copy = individual.clone();
-
-        expect(copy.state.computed().value).toEqual(individual.state.computed().value + 1);
+        expect(copy.state.computeAll()).toEqual(state.computeAll());
       }));
     });
 
@@ -994,7 +964,7 @@ describe("Individual", () => {
       const b = new Individual({ genotype: new List([1, 1, 1, 1]) });
 
       const [child] = a.offspring([b], uniform(), { state: () => ({ x: 5 }) });
-      expect(child.state.initial.x).toBe(5);
+      expect(child.state.computeAll().x).toBe(5);
     });
 
     it("throws a TypeError if the first argument (partners) is not an array", () => {

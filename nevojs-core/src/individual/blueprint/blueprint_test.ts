@@ -286,7 +286,7 @@ describe("Blueprint", () => {
       const state = { a: 123, b: 42 };
       const individual = blueprint.spawn({ state: () => state }) as $Individual<typeof blueprint>;
 
-      expect(individual.state.computed()).toEqual(state);
+      expect(individual.state.serialize()).toEqual(state);
     });
 
     it("throws a TypeError if the settings object is specified but is not an object", () => {
