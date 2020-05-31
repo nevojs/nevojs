@@ -1,51 +1,97 @@
-import { serialize, SerializableObject } from "../serialization";
+import { serialize, deserialize, SerializableObject, isSerializable } from "../serialization";
+import { isObjectLiteral } from "../util";
 
-type StateData<T extends SerializableObject> = {
+type StateBindings<T extends SerializableObject> = {
   [K in keyof T]: () => T[K];
 }
 
 export class State<T extends SerializableObject> {
-  public readonly initial: Partial<T>;
+  public static deserialize<T extends SerializableObject>(
+    serialized: T,
+    func?: (data: T) => T,
+  ): State<T> {
+    const data = deserialize(func ? func(serialized) : serialized);
+    return new State<T>(data);
+  }
 
-  private readonly bindings: Partial<StateData<T>> = {};
+  public static fromJSON<T extends SerializableObject>(
+    serialized: string,
+    func?: (data: T) => T,
+  ): State<T> {
+    return State.deserialize(JSON.parse(serialized), func);
+  }
 
-  public constructor(data: Partial<T>) {
+  public readonly initial: Readonly<Partial<T>>;
+
+  private readonly _bindings: Partial<StateBindings<T>> = {};
+
+  public bindings(): Partial<StateBindings<T>> {
+    return Object.assign({}, this._bindings);
+  }
+
+  public constructor(data: Partial<T> = {}) {
+    if (!isObjectLiteral(data)) {
+      throw new TypeError();
+    }
+
     this.initial = data;
 
-    const stateData: Partial<StateData<T>> = {};
+    const stateData: Partial<StateBindings<T>> = {};
 
-    for (const [key, value] of Object.entries(data)) {
-      stateData[key as keyof T] = () => value as T[keyof T];
+    for (const binding in data) {
+      stateData[binding as keyof T] = () => data[binding] as T[keyof T];
     }
 
     this.bind(stateData);
   }
 
-  public bind(data: Partial<StateData<T>>): void {
-    Object.assign(this.bindings, data);
+  public bind(data: Partial<StateBindings<T>>): void {
+    if (!isObjectLiteral(data)) {
+      throw new TypeError();
+    }
+
+    Object.assign(this._bindings, data);
   }
 
-  public computed(): T {
-    return Object.fromEntries(
-      Object.entries(this.bindings).map(([property, func]) => [property, func()])
-    );
+  public computeAll(): T {
+    const entries: Partial<T> = {};
+
+    for (const binding in this._bindings) {
+      entries[binding] = this.compute(binding);
+    }
+
+    return entries as T;
   }
 
-  public clone(
-    func?: (data: any) => any,
-  ): State<T> {
-    const data = func ?
-      func(this.computed())
-      : this.computed();
+  public compute<K extends keyof T>(key: K): T[K] {
+    const binding = this._bindings[key];
 
-    return new State(data) as State<T>;
+    if (binding === undefined) {
+      throw new Error();
+    }
+
+    return binding();
   }
 
-  public serialize(): T {
-    return serialize(this.computed());
+  public clone(): State<T> {
+    return new State<T>(this.computeAll());
   }
 
-  public toJSON(): string {
-    return JSON.stringify(this.serialize());
+  public serialize(func?: (data: T) => T): SerializableObject {
+    if (func !== undefined && typeof func !== "function") {
+      throw new TypeError();
+    }
+
+    const data = func ? func(this.computeAll()) : this.computeAll();
+
+    if (!isObjectLiteral(data) || !isSerializable(data)) {
+      throw new Error("cannot serialize");
+    }
+
+    return serialize(data);
+  }
+
+  public toJSON(func?: (data: T) => T): string {
+    return JSON.stringify(this.serialize(func));
   }
 }

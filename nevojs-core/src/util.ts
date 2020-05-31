@@ -114,6 +114,14 @@ export function isPositiveInt(x: number): boolean {
 
 /**
  * @hidden
+ * @param data
+ */
+export function isObjectLiteral(data: any): boolean {
+  return data !== undefined && data !== null && data.constructor === Object;
+}
+
+/**
+ * @hidden
  */
 export function randomGauss(mean: number = 0, standardDeviation: number = 1): number {
   const u1 = Math.random();
