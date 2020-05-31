@@ -165,18 +165,11 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
     }
 
     const individuals: BlueprintSpawnOutput<G, P>[] = new Array(amount);
-    let async = false;
-
     for (let i = 0; i < amount; i++) {
-      const spawn = this.spawn(settings);
-      individuals[i] = spawn;
-
-      if (!async && spawn instanceof Promise) {
-        async = true;
-      }
+      individuals[i] = this.spawn(settings);
     }
 
-    if (async) {
+    if (individuals[0] instanceof Promise) {
       return Promise.all(individuals) as unknown as BlueprintSpawnOutput<G, P>[];
     }
 
