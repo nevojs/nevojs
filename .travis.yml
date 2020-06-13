@@ -6,3 +6,4 @@ cache: yarn
 script:
   - lerna bootstrap
   - lerna run test-ci --since
+  - codecov
