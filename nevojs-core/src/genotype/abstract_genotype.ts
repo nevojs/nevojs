@@ -9,7 +9,7 @@ import { isPositiveInt } from "../util";
 export abstract class AbstractGenotype<T> implements Genotype<T> {
   protected _data: T;
 
-  protected constructor(data: T) {
+  public constructor(data: T) {
     this._data = data;
   }
 
