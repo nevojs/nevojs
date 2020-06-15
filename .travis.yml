@@ -2,8 +2,6 @@ language: node_js
 node_js:
   - 12
 cache: yarn
-
 script:
   - lerna bootstrap
-  - lerna run test-ci --since
-  - codecov
+  - lerna run test:ci --since

@@ -25,9 +25,9 @@
   "scripts": {
     "build": "rollup -c",
     "test": "jest",
-    "test-ci": "jest --coverage",
     "test-watch": "jest --watchAll",
     "coverage": "jest --coverage",
+    "test:ci": "yarn coverage && cat ./coverage/lcov.info | npx coveralls",
     "lint": "eslint src/**",
     "fix": "eslint --fix src/** --ext .ts",
     "api": "typedoc --json ./api.json --excludeNotExported --mode file ./src/exports.ts"
