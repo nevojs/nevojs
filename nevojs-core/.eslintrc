@@ -28,6 +28,7 @@
     "no-multiple-empty-lines": ["error", { "max": 1 }],
     "no-trailing-spaces": "error",
     "sort-imports": "error",
-    "quotes": ["error", "double"]
+    "quotes": ["error", "double"],
+    "arrow-parens": ["error", "always"]
   }
 }
