@@ -42,13 +42,6 @@ export interface GroupCloneSettings {
 /**
  *
  */
-export interface GroupCrowdSettings {
-  threshold?: number;
-}
-
-/**
- *
- */
 export class Group<I extends AnyIndividual> extends Collection<I> {
   /**
    *
