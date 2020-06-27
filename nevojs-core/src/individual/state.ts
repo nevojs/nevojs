@@ -73,8 +73,18 @@ export class State<T extends SerializableObject> {
     return binding();
   }
 
-  public clone(): State<T> {
-    return new State<T>(this.computeAll());
+  public clone(
+    func?: (data: T) => T,
+  ): State<T> {
+    if (func !== undefined && typeof func !== "function") {
+      throw new TypeError();
+    }
+
+    const data = func === undefined
+      ? this.computeAll()
+      : func(this.computeAll());
+
+    return new State<T>(data);
   }
 
   public serialize(func?: (data: T) => T): SerializableObject {

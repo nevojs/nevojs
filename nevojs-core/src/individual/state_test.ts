@@ -125,6 +125,15 @@ describe("State", () => {
       }));
     });
 
+    it("modifies cloned data using a function if given", () => {
+      fc.assert(fc.property(fc.integer(), value => {
+        const state = new State({ value });
+        const copy = state.clone(data => ({ value: data.value + 1 }));
+
+        expect(copy.compute("value")).toBe(value + 1);
+      }));
+    });
+
     it("does not clone bindings", () => {
       fc.assert(fc.property(fc.integer(), fc.integer(), (initialValue, newValue) => {
         fc.pre(initialValue !== newValue);
@@ -138,6 +147,19 @@ describe("State", () => {
         data.value = newValue;
 
         expect(state.compute("x")).not.toBe(copy.compute("x"));
+      }));
+    });
+
+    it("throws a TypeError if the cloning function is specified and is not a function", () => {
+      fc.assert(fc.property(fc.anything(), func => {
+        fc.pre(func !== undefined && typeof func !== "function");
+
+        const state = new State();
+
+        expect(() => {
+          // @ts-expect-error
+          state.clone(func);
+        }).toThrow(TypeError);
       }));
     });
   });
