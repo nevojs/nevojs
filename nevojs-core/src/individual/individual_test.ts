@@ -534,6 +534,44 @@ describe("Individual", () => {
       }));
     });
 
+    it("clones the state using a function if given", () => {
+      fc.assert(fc.property(fc.integer(), fc.integer(), (a, b) => {
+        const state = new State({ a, b });
+        const genotype = new List([]);
+        const individual = new Individual({ genotype, state });
+
+        const copy = individual.clone({
+          state: (data) => ({
+            a: data.a + 1,
+            b: data.b + 1,
+          }),
+        });
+
+        expect(copy.state.compute("a")).toEqual(state.compute("a") + 1);
+        expect(copy.state.compute("b")).toEqual(state.compute("b") + 1);
+      }));
+    });
+
+    it("clones the state using a default function if specified", () => {
+      fc.assert(fc.property(fc.integer(), fc.integer(), (a, b) => {
+        const state = new State({ a, b });
+        const genotype = new List([]);
+        const individual = new Individual({ genotype, state });
+
+        individual.setDefault(Default.Cloning, ({
+          state: (data) => ({
+            a: data.a + 1,
+            b: data.b + 1,
+          }),
+        }));
+
+        const copy = individual.clone();
+
+        expect(copy.state.compute("a")).toEqual(state.compute("a") + 1);
+        expect(copy.state.compute("b")).toEqual(state.compute("b") + 1);
+      }));
+    });
+
     it("clones objectives", () => {
       fc.assert(fc.property(
         fc.array(fc.tuple(fc.integer(), fc.integer())),

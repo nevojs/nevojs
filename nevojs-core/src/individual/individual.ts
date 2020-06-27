@@ -60,6 +60,7 @@ export interface IndividualOffspringSettings<G extends AnyGenotype, P> {
 export interface IndividualCloneSettings<G extends AnyGenotype, P> {
   genotype?: (data: $Data<G>) => $Data<G>;
   phenotype?: PhenotypeFunction<G, P>;
+  state?: (data: any) => any;
 }
 
 /**
@@ -274,7 +275,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
-    const state = this.state.clone();
+    const state = this.state.clone(settings.state);
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(this.objectives().map(objective => objective.clone()));
