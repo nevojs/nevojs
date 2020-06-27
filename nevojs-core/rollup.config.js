@@ -14,7 +14,7 @@ const BANNER = `/*!
 export default {
   input: "./src/exports.ts",
   output: {
-    name: "nevo",
+    name: "Nevo",
     file: "./dist/nevo.min.js",
     format: "iife",
   },
