@@ -241,8 +241,6 @@ export class Collection<T> {
     }
 
     if (this.length > size) {
-      console.warn(`Warning: Resize to ${size} in the ${this.length}-element group, removing last ${this.length - size} members`);
-
       this.set(this.members().slice(0, size));
     }
 
