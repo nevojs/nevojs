@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { EvaluationData, EvaluationFunction } from "./evaluation/evaluation_function";
+import { Evaluation, EvaluationFunction } from "./evaluation/evaluation_function";
 import { AnyGenotype, UnresolvedGenotype } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
 import { isPositiveInt, Resolved, toArray } from "../util";
@@ -212,7 +212,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     }
 
     const evaluation = func(this);
-    const assignEvaluation = (data: EvaluationData) => this.setObjectives(toArray(data));
+    const assignEvaluation = (data: Evaluation) => this.setObjectives(toArray(data));
 
     return evaluation instanceof Promise
       ? evaluation.then(assignEvaluation)
