@@ -400,6 +400,8 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
       children.push(...this.offspring(partners, method, settings));
     }
 
-    return children.slice(0, amount);
+    return children.length > amount
+      ? children.slice(0, amount)
+      : children;
   }
 }
