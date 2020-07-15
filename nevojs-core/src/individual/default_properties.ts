@@ -29,6 +29,7 @@ export enum Default {
   Evaluation = "evaluation",
   Mutation = "mutation",
   Crossover = "crossover",
+  CrossoverSettings = "crossoverSettings",
   Cloning = "cloning",
   Serialization = "serialization",
   Deserialization = "deserialization",

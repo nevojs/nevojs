@@ -106,6 +106,7 @@ export type IndividualDefaultValues<G extends AnyGenotype, P> = {
   [Default.Evaluation]: EvaluationFunction<G, P>;
   [Default.Mutation]: $Mutation<G>;
   [Default.Crossover]: $Crossover<G>;
+  [Default.CrossoverSettings]: IndividualOffspringSettings<G, P>;
   [Default.Cloning]: IndividualCloneSettings<G, P>;
   [Default.Serialization]: IndividualSerializationSettings<G, P>;
   [unknownDefault: string]: unknown;
@@ -354,7 +355,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   public offspring(
     partners: Individual<G, P>[],
     method: CrossoverMethod<$Data<G>> = this.getDefault(Default.Crossover),
-    settings: IndividualOffspringSettings<G, P> = {},
+    settings: IndividualOffspringSettings<G, P> = this.getDefault(Default.CrossoverSettings) ?? {},
   ): Individual<G, P>[] {
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
 
