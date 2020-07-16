@@ -22,7 +22,7 @@ import { SerializedValueIdentifier } from "../../serialization";
 describe("Objective", () => {
   describe("constructor", () => {
     it("throws a TypeError if the value is not a valid number", () => {
-      fc.assert(fc.property(fc.anything(), value => {
+      fc.assert(fc.property(fc.anything(), (value) => {
         fc.pre(typeof value !== "number" || isNaN(value));
 
         expect(() => new Objective(value as number, 1)).toThrowError(TypeError);
@@ -30,7 +30,7 @@ describe("Objective", () => {
     });
 
     it("throws a TypeError if the weight is not a valid number", () => {
-      fc.assert(fc.property(fc.anything(), weight => {
+      fc.assert(fc.property(fc.anything(), (weight) => {
         fc.pre(typeof weight !== "number" || isNaN(weight));
 
         expect(() => new Objective(1, weight as number)).toThrowError(TypeError);
@@ -40,7 +40,7 @@ describe("Objective", () => {
 
   describe("value (get)", () => {
     it("returns the value passed to objective when created", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const objective = new Objective(value, 1);
 
         expect(objective.value).toBe(value);
@@ -50,7 +50,7 @@ describe("Objective", () => {
 
   describe("weight (get)", () => {
     it("returns the weight passed to objective when created", () => {
-      fc.assert(fc.property(fc.integer(), weight => {
+      fc.assert(fc.property(fc.integer(), (weight) => {
         const objective = new Objective(1, weight);
 
         expect(objective.weight).toBe(weight);
@@ -60,7 +60,7 @@ describe("Objective", () => {
 
   describe("value (set)", () => {
     it("sets the value", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const objective = new Objective(1, 1);
         objective.value = value;
 
@@ -69,7 +69,7 @@ describe("Objective", () => {
     });
 
     it("throws a TypeError if the value is not a valid number", () => {
-      fc.assert(fc.property(fc.anything(), value => {
+      fc.assert(fc.property(fc.anything(), (value) => {
         fc.pre(typeof value !== "number" || isNaN(value));
 
         const objective = new Objective(2, 1);
@@ -83,7 +83,7 @@ describe("Objective", () => {
 
   describe("weight (set)", () => {
     it("sets the weight", () => {
-      fc.assert(fc.property(fc.integer(), weight => {
+      fc.assert(fc.property(fc.integer(), (weight) => {
         const objective = new Objective(1, 1);
         objective.weight = weight;
 
@@ -92,7 +92,7 @@ describe("Objective", () => {
     });
 
     it("throws a TypeError if the weight is not a valid number", () => {
-      fc.assert(fc.property(fc.anything(), weight => {
+      fc.assert(fc.property(fc.anything(), (weight) => {
         fc.pre(typeof weight !== "number" || isNaN(weight));
 
         const objective = new Objective(2, 1);
@@ -130,7 +130,7 @@ describe("Objective", () => {
     });
 
     it("has the same value as the original objective", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const objective = new Objective(value, 1);
         const copy = objective.clone();
 
@@ -139,7 +139,7 @@ describe("Objective", () => {
     });
 
     it("has the same weight as the original objective", () => {
-      fc.assert(fc.property(fc.integer(), weight => {
+      fc.assert(fc.property(fc.integer(), (weight) => {
         const objective = new Objective(1, weight);
         const copy = objective.clone();
 
@@ -150,7 +150,7 @@ describe("Objective", () => {
 
   describe("serialize", () => {
     it("properly serializes value (numeric)", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const objective = new Objective(value, 1);
         const serialized = objective.serialize();
 
@@ -173,7 +173,7 @@ describe("Objective", () => {
     });
 
     it("properly serializes weight (numeric)", () => {
-      fc.assert(fc.property(fc.integer(), weight => {
+      fc.assert(fc.property(fc.integer(), (weight) => {
         const objective = new Objective(1, weight);
         const serialized = objective.serialize();
 
@@ -215,7 +215,7 @@ describe("Objective", () => {
     });
 
     it("properly deserializes value (numeric)", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const serialized: SerializedObjective = {
           value,
           weight: 1,
@@ -247,7 +247,7 @@ describe("Objective", () => {
     });
 
     it("properly deserializes weight (numeric)", () => {
-      fc.assert(fc.property(fc.integer(), weight => {
+      fc.assert(fc.property(fc.integer(), (weight) => {
         const serialized: SerializedObjective = {
           value: 1,
           weight,

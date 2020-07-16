@@ -146,7 +146,7 @@ export function inspectObjectRecursively<T extends { constructor: Function }>(
     ? data
     : Object.values(data);
 
-  return !properties.some(property => !inspectObjectRecursively(property, func));
+  return !properties.some((property) => !inspectObjectRecursively(property, func));
 }
 
 /**
@@ -161,6 +161,6 @@ export function mapObjectValuesRecursively<T extends { constructor: Function }>(
   }
 
   return Array.isArray(data)
-    ? data.map(value => mapObjectValuesRecursively(value, func))
+    ? data.map((value) => mapObjectValuesRecursively(value, func))
     : Object.fromEntries(Object.entries(data).map(([key, value]) => [key, mapObjectValuesRecursively(value, func)]));
 }

@@ -16,7 +16,7 @@
  */
 
 import { ScalarizationMethod, weightedSum } from "../individual/multiobjective_optimization/scalarization";
-import { isNumber, isPositiveInt, choose } from "../util";
+import { choose, isNumber, isPositiveInt } from "../util";
 import { pick } from "../helpers";
 import { AnyIndividual } from "../individual/individual";
 import {
@@ -47,7 +47,7 @@ export function best<I extends AnyIndividual>(target: ScalarizationMethod<I> = w
  * @category selection
  */
 export function worst<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
-  return best(ind => -target(ind));
+  return best((ind) => -target(ind));
 }
 
 /**
@@ -124,7 +124,7 @@ export function tournament<I extends AnyIndividual>(
  */
 export function roulette<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
   return (amount, individuals) => {
-    const items = individuals.map(item => {
+    const items = individuals.map((item) => {
       const probability = target(item);
       return { probability, item };
     });
@@ -141,7 +141,7 @@ export function roulette<I extends AnyIndividual>(target: ScalarizationMethod<I>
 export function rank<I extends AnyIndividual>(target: ScalarizationMethod<I> = weightedSum): SelectionMethod<I> {
   return (amount, individuals) => {
     individuals.sort((a, b) => target(a) - target(b));
-    const method = roulette<I>(ind => individuals.indexOf(ind) + 1);
+    const method = roulette<I>((ind) => individuals.indexOf(ind) + 1);
 
     return method(amount, individuals);
   };

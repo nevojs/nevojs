@@ -61,9 +61,9 @@ export abstract class AbstractGenotype<T> implements Genotype<T> {
   ): G[] {
     const parents = [
       this.data(),
-      ...partners.map(partner => partner.data()),
+      ...partners.map((partner) => partner.data()),
     ];
 
-    return method(parents).map(data => func(data));
+    return method(parents).map((data) => func(data));
   }
 }

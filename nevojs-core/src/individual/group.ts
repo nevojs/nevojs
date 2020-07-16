@@ -16,11 +16,11 @@
  */
 
 import {
-  AnyIndividual,
-  Individual, IndividualOffspringSettings,
+  AnyIndividual, IndividualCloneSettings,
+  IndividualOffspringSettings,
 } from "./individual";
-import { $Genotype, $Phenotype, $Data } from "../util_types";
-import { merge, choose } from "../util";
+import { $Crossover, $Data, $Genotype, $Phenotype } from "../util_types";
+import { choose, merge } from "../util";
 import { CrossoverMethod } from "../operators/crossover";
 import { EvaluationFunction } from "./evaluation/evaluation_function";
 import { MutationMethod } from "../operators/mutation";
@@ -37,6 +37,7 @@ export type GroupData<I extends AnyIndividual> = I | I[] | Group<I>;
  */
 export interface GroupCloneSettings {
   deep?: boolean;
+  func?: IndividualCloneSettings<any, any>;
 }
 
 /**
@@ -47,14 +48,14 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
    *
    */
   public evaluate(func?: EvaluationFunction<$Genotype<I>, $Phenotype<I>>): void {
-    this.members().forEach(member => member.evaluate(func));
+    this.members().forEach((member) => member.evaluate(func));
   }
 
   /**
    *
    */
   public async evaluateAsync(): Promise<void> {
-    return Promise.all(this.members().map(member => member.evaluate())).then();
+    return Promise.all(this.members().map((member) => member.evaluate())).then();
   }
 
   /**
@@ -114,7 +115,7 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
     }
 
     const members = deep
-      ? this.members().map(member => member.clone()) as I[]
+      ? this.members().map((member) => member.clone(settings.func)) as I[]
       : this.members();
 
     const { size } = this;
@@ -171,17 +172,17 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
    * @param settings
    */
   public offspring(
-    method?: CrossoverMethod<$Data<$Genotype<I>>>,
+    method?: $Crossover<I>,
     settings?: IndividualOffspringSettings<$Genotype<I>, $Phenotype<I>>,
   ): I[] {
-    const [parent, ...partners] = this.members() as Individual<$Genotype<I>, $Phenotype<I>>[];
-    return parent.offspring(partners, method, settings) as I[];
+    const [parent, ...partners] = this.members();
+    return parent.offspring(partners, method as $Crossover<unknown>, settings) as I[];
   }
 
   /**
    *
    * @param method
-  */
+   */
   public child(method?: CrossoverMethod<$Data<$Genotype<I>>>): I {
     const [child] = choose(this.offspring(method), 1);
     return child;
@@ -192,7 +193,7 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
    * @param method
    */
   public mutate(method?: MutationMethod<$Data<$Genotype<I>>>): void {
-    this.members().forEach(member => member.mutate(method as any));
+    this.members().forEach((member) => member.mutate(method as any));
   }
 
   /**

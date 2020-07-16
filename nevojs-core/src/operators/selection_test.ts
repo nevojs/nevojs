@@ -49,7 +49,7 @@ function select<I extends AnyIndividual>(settings: SelectSettings<I>): I[] {
 function returnsIndividualArray(method: SelectionMethod): void {
   it("returns array with Individual instances", () => {
     const result = select({ method, individuals });
-    expect(result.every(x => x instanceof Individual)).toBe(true);
+    expect(result.every((x) => x instanceof Individual)).toBe(true);
   });
 }
 

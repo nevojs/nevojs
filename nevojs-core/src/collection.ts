@@ -175,7 +175,7 @@ export class Collection<T> {
     func: (i: number) => CollectionData<T>,
     settings: CollectionCrowdSettings = {},
   ): T[] {
-    const threshold = settings.threshold ?? this.space();
+    const threshold = settings.threshold ?? this.size;
 
     if (
       !validation.isNumber(threshold) ||
@@ -185,46 +185,56 @@ export class Collection<T> {
       throw new TypeError(`Expected threshold to be a finite, positive integer value (${threshold} given)`);
     }
 
-    let i = 0;
-    const members: T[] = [];
+    if (this.length > threshold) {
+      throw new Error();
+    }
 
-    while (threshold > members.length) {
+    const members: T[] = [];
+    let i = 0;
+
+    while (threshold > members.length + this.length) {
       const data = Collection.parse(func(i++));
       members.push(...data);
     }
 
-    this.add(members.slice(0, threshold));
+    const space = this.space();
+
+    this.add(
+      members.length > space
+        ? members.slice(0, space)
+        : members,
+    );
+
     return members;
   }
 
-  /**
-   *
-   * @param func
-   * @param settings
-   */
   public async crowdAsync(
     func: (i: number) => Promise<CollectionData<T>>,
     settings: CollectionCrowdSettings = {},
   ): Promise<T[]> {
-    const threshold = settings.threshold ?? this.space();
+    const threshold = settings.threshold ?? this.size;
 
     if (
       !validation.isNumber(threshold) ||
       !validation.isFinite(threshold) ||
       !validation.isPositiveInt(threshold)
     ) {
-      throw new TypeError( `Expected threshold to be a finite, positive integer value (${threshold} given)`);
+      throw new TypeError(`Expected threshold to be a finite, positive integer value (${threshold} given)`);
     }
 
-    let i = 0;
-    const members: T[] = [];
+    if (this.length > threshold) {
+      throw new Error();
+    }
 
-    while (threshold > members.length) {
+    const members: T[] = [];
+    let i = 0;
+
+    while (threshold > members.length + this.length) {
       const data = Collection.parse(await func(i++));
       members.push(...data);
     }
 
-    this.add(members.slice(0, threshold));
+    this.add(members);
     return members;
   }
 

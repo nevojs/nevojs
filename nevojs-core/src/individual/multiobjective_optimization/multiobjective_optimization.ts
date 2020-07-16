@@ -100,7 +100,7 @@ export function crowdingDistance<I extends AnyIndividual>(individuals: I[]): Wea
   }
 
   for (let i = 0; i < individuals[0].objectives().length; i++) {
-    const criteria: ScalarizationMethod<I> = individual => individual.objective(i).fitness();
+    const criteria: ScalarizationMethod<I> = (individual) => individual.objective(i).fitness();
     const selection = best(criteria);
 
     const sorted = selection(individuals.length, individuals);
@@ -129,7 +129,7 @@ export function crowdingDistance<I extends AnyIndividual>(individuals: I[]): Wea
  * @category multi-objective-optimization
  */
 export function rank(individual: AnyIndividual, fronts: AnyIndividual[][]): number {
-  const front = fronts.find(front => front.includes(individual));
+  const front = fronts.find((front) => front.includes(individual));
 
   if (front === undefined || !fronts.includes(front)) {
     throw new Error();

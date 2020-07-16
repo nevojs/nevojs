@@ -58,7 +58,7 @@ export function map<T>(
     throw new TypeError();
   }
 
-  return genes => genes.map((gene, i) => {
+  return (genes) => genes.map((gene, i) => {
     const probability = typeof rate === "function"
       ? rate(gene, i, genes)
       : rate;
@@ -126,8 +126,8 @@ export function bound(
   }
 
   return typeof funcOrSettings === "function"
-    ? gene => boundValue(funcOrSettings(gene), settings)
-    : gene => boundValue(gene, funcOrSettings);
+    ? (gene) => boundValue(funcOrSettings(gene), settings)
+    : (gene) => boundValue(gene, funcOrSettings);
 }
 
 /**
@@ -147,7 +147,7 @@ export function alternateGene<T>(
   func: IterativeMutationCallback<T>,
   settings: AlternateGeneSettings<T> = {},
 ): MutationMethod<T[]> {
-  return genes => {
+  return (genes) => {
     const unresolvedIndex = settings.index ?? Math.floor(Math.random() * genes.length);
     const index = typeof unresolvedIndex === "function"
       ? unresolvedIndex(genes)
@@ -180,7 +180,7 @@ export function alternatePart<T>(
   func: (data: T[], start: number, end: number) => T[],
   settings: AlternatePartSettings<T> = {},
 ): MutationMethod<T[]> {
-  return genes => {
+  return (genes) => {
     const unresolvedStart = settings.start ?? Math.floor(Math.random() * (genes.length - 1));
     const start = typeof unresolvedStart === "function"
       ? unresolvedStart(genes)
@@ -205,7 +205,7 @@ export function alternatePart<T>(
  * @category mutation
  */
 export function flip(): MutationMethod<number> {
-  return gene => Number(!gene);
+  return (gene) => Number(!gene);
 }
 
 /**
@@ -214,7 +214,7 @@ export function flip(): MutationMethod<number> {
  * @category mutation
  */
 export function inversion<T = any>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
-  return alternatePart(genes => genes.reverse(), settings);
+  return alternatePart((genes) => genes.reverse(), settings);
 }
 
 /**
@@ -223,7 +223,7 @@ export function inversion<T = any>(settings?: AlternatePartSettings<T>): Mutatio
  * @category mutation
  */
 export function swap<T = any>(settings?: AlternatePartSettings<T>): MutationMethod<T[]> {
-  return alternatePart(genes => {
+  return alternatePart((genes) => {
     const start = 0;
     const end = genes.length - 1;
 
@@ -245,5 +245,5 @@ export function scramble<T = any>(settings?: AlternatePartSettings<T>): Mutation
  * @category mutation
  */
 export function gauss(): MutationMethod<number> {
-  return gene => gene + randomGauss();
+  return (gene) => gene + randomGauss();
 }

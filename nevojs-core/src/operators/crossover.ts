@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import { isPositiveInt, choose, range, shuffle } from "../util";
+import { choose, isPositiveInt, range, shuffle } from "../util";
 
 /**
  *
@@ -45,7 +45,7 @@ export function uniform(settings: Partial<UniformCrossoverSettings> = {}): Cross
     throw new TypeError();
   }
 
-  return parents => {
+  return (parents) => {
     const [parentA, parentB] = parents;
 
     const childA = new Array(parentA.length);
@@ -79,7 +79,7 @@ export interface PointCrossoverSettings {
 export function point(settings: Partial<PointCrossoverSettings> = {}): CrossoverMethod<any[]> {
   const points = settings.points ?? 2;
 
-  return parents => {
+  return (parents) => {
     const [parentA, parentB] = parents;
 
     if (parents.length !== 2 || parentA.length !== parentB.length) {
@@ -91,7 +91,7 @@ export function point(settings: Partial<PointCrossoverSettings> = {}): Crossover
 
     let POINTS: number[];
     if (Array.isArray(points)) {
-      if (points.some(point => !isPositiveInt(point) || start > point || point > end)) {
+      if (points.some((point) => !isPositiveInt(point) || start > point || point > end)) {
         throw new TypeError();
       }
 
@@ -137,7 +137,7 @@ export function point(settings: Partial<PointCrossoverSettings> = {}): Crossover
  * @category crossover
  */
 export function ordered(): CrossoverMethod<any[]> {
-  return parents => {
+  return (parents) => {
     const points = range(0, parents[0].length - 1);
     const [start, end] = choose(points, 2).sort((a, b) => a - b);
 
@@ -174,7 +174,7 @@ export interface BlendCrossoverSettings {
 export function blend(settings: Partial<BlendCrossoverSettings> = {}): CrossoverMethod<number[]> {
   const alpha = settings.alpha ?? 0.5;
 
-  return parents => {
+  return (parents) => {
     const children = new Array(2);
     const [parentA, parentB] = parents;
 
@@ -215,11 +215,33 @@ export interface SimulatedBinaryCrossoverSettings {
 export function simulatedBinary(settings: Partial<SimulatedBinaryCrossoverSettings> = {}): CrossoverMethod<number[]> {
   const distributionIndex = settings.distributionIndex ?? 3;
 
+  return (parents) => {
+    const childA: number[] = Array(parents[0].length);
+    const childB: number[] = Array(parents[0].length);
+
+    for (let i = 0; i < parents[0].length; i++) {
+      const geneA = parents[0][i];
+      const geneB = parents[1][i];
+
+      const x = 0.5 * (geneA + geneB);
+      const y = Math.random() * distributionIndex * (geneB - geneA);
+
+      childA[i] = x - 0.5 * y;
+      childB[i] = x + 0.5 * y;
+    }
+
+    return [childA, childB];
+  };
+
+  /*
   return parents => {
     const u = Math.random();
     const x = 1 / (distributionIndex + 1);
 
-    const beta = (0.5 >= u ? 2 * u : 1 / (2 * (1 - u))) ** x;
+    const aaa = 0.5 >= u
+      ? 2 * u
+      : 1 / (2 * (1 - u));
+    const beta = aaa ** x;
 
     const childA: number[] = new Array(parents[0].length);
     const childB: number[] = new Array(parents[0].length);
@@ -231,4 +253,5 @@ export function simulatedBinary(settings: Partial<SimulatedBinaryCrossoverSettin
 
     return [childA, childB];
   };
+   */
 }

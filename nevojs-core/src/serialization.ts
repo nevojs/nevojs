@@ -41,20 +41,9 @@ export type Serializable = SerializableObject | SerializableValue | Serializable
  * @param data
  */
 export function isSerializable(data: any): data is Serializable {
-  return inspectObjectRecursively(data, property => {
+  return inspectObjectRecursively(data, (property) => {
     return ["string", "number", "boolean", "undefined"].includes(typeof property) || property === null;
   });
-}
-
-/**
- * @hidden
- * @param data
- */
-export function isSerializableObjectLiteral(data: any): data is SerializableObject {
-  return data !== undefined &&
-    data !== null &&
-    (data as any).constructor === Object &&
-    isSerializable(data);
 }
 
 export enum SerializedValueIdentifier {
@@ -117,5 +106,5 @@ export function deserialize(data: any): any {
     return value;
   };
 
-  return mapObjectValuesRecursively(data, value => override(value as string));
+  return mapObjectValuesRecursively(data, (value) => override(value as string));
 }

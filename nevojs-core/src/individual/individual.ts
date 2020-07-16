@@ -18,11 +18,11 @@
 import { Evaluation, EvaluationFunction } from "./evaluation/evaluation_function";
 import { AnyGenotype, UnresolvedGenotype } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
-import { isPositiveInt, Resolved, toArray } from "../util";
+import { Resolved, isPositiveInt, toArray } from "../util";
 import {
-  deserialize,
-  isSerializable,
-  Serializable, SerializableObject,
+  Serializable,
+  SerializableObject,
+  deserialize, isSerializable,
   serialize
 } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
@@ -128,7 +128,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     const genotype = settings.genotype(deserialize(serialized.genotype));
     const phenotype = settings.phenotype;
     const state = State.deserialize(serialized.state, settings.state);
-    const objectives = serialized.objectives.map(objective => Objective.deserialize(objective));
+    const objectives = serialized.objectives.map((objective) => Objective.deserialize(objective));
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(objectives);
@@ -257,14 +257,14 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    *
    */
   public fitness(): number[] {
-    return this._objectives.map(objective => objective.fitness());
+    return this._objectives.map((objective) => objective.fitness());
   }
 
   /**
    *
    */
   public values(): number[] {
-    return this._objectives.map(objective => objective.value);
+    return this._objectives.map((objective) => objective.value);
   }
 
   /**
@@ -279,7 +279,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
     const state = this.state.clone(settings.state);
 
     const individual = new Individual({ genotype, phenotype, state });
-    individual.setObjectives(this.objectives().map(objective => objective.clone()));
+    individual.setObjectives(this.objectives().map((objective) => objective.clone()));
     this.applyDefaults(individual);
 
     return individual;
@@ -327,7 +327,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
 
     const genotype = serialize(settings.genotype ? settings.genotype(data) : data);
     const state = this.state.serialize(settings.state);
-    const objectives = this.objectives().map(objective => objective.serialize());
+    const objectives = this.objectives().map((objective) => objective.serialize());
 
     if (!isSerializable(genotype)) {
       throw new Error("cannot serialize");
@@ -363,10 +363,10 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
       throw new TypeError();
     }
 
-    const partnerGenotypes = partners.map(partner => partner.genotype);
+    const partnerGenotypes = partners.map((partner) => partner.genotype);
     const childrenGenotypes = this.genotype.offspring(partnerGenotypes, method) as G[];
 
-    return childrenGenotypes.map(genotype => {
+    return childrenGenotypes.map((genotype) => {
       const state = settings.state !== undefined
         ? new State(settings.state([this, ...partners]))
         : undefined;

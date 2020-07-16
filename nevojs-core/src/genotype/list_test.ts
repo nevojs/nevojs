@@ -23,13 +23,13 @@ import { MutationMethod } from "../operators/mutation";
 describe("List", () => {
   describe("generate", () => {
     it("returns an instance of List", () => {
-      const list = List.generate(3, i => i);
+      const list = List.generate(3, (i) => i);
 
       expect(list).toBeInstanceOf(List);
     });
 
     it("provides an index as the callback's first argument", () => {
-      const func = jest.fn(i => i);
+      const func = jest.fn((i) => i);
       List.generate(3, func);
 
       expect(func.mock.calls[0][0]).toBe(0);
@@ -38,8 +38,8 @@ describe("List", () => {
     });
 
     it("calls the given func n times for n-element list", () => {
-      fc.assert(fc.property(fc.integer(1, 30), size => {
-        const func = jest.fn(i => i);
+      fc.assert(fc.property(fc.integer(1, 30), (size) => {
+        const func = jest.fn((i) => i);
         List.generate(size, func);
 
         expect(func.mock.calls.length).toBe(size);
@@ -47,7 +47,7 @@ describe("List", () => {
     });
 
     it("throws a TypeError if the size is not a positive integer number", () => {
-      fc.assert(fc.property(fc.anything(), size => {
+      fc.assert(fc.property(fc.anything(), (size) => {
         fc.pre(
           0 >= (size as number) ||
           (size as number) % 1 > 0 ||
@@ -55,13 +55,13 @@ describe("List", () => {
         );
 
         expect(() => {
-          List.generate(size as number, i => i);
+          List.generate(size as number, (i) => i);
         }).toThrow(TypeError);
       }));
     });
 
     it("throws a TypeError if the callback is not a function", () => {
-      fc.assert(fc.property(fc.anything(), func => {
+      fc.assert(fc.property(fc.anything(), (func) => {
         fc.pre(typeof func !== "function");
 
         expect(() => {
@@ -73,7 +73,7 @@ describe("List", () => {
 
   describe("constructor", () => {
     it("throws a TypeError if the data is not an array", () => {
-      fc.assert(fc.property(fc.anything(), data => {
+      fc.assert(fc.property(fc.anything(), (data) => {
         fc.pre(!Array.isArray(data));
 
         expect(() => {
@@ -91,7 +91,7 @@ describe("List", () => {
     });
 
     it("does not return the same array that was passed when creating", () => {
-      fc.assert(fc.property(fc.array(fc.anything(), 50), data => {
+      fc.assert(fc.property(fc.array(fc.anything(), 50), (data) => {
         const list = new List(data);
 
         expect(list.data()).not.toBe(data);
@@ -99,7 +99,7 @@ describe("List", () => {
     });
 
     it("returns current data", () => {
-      fc.assert(fc.property(fc.array(fc.anything(), 50), data => {
+      fc.assert(fc.property(fc.array(fc.anything(), 50), (data) => {
         const list = new List(data);
 
         expect(list.data()).toEqual(data);
@@ -109,7 +109,7 @@ describe("List", () => {
 
   describe("length (get)", () => {
     it("returns an amount of elements in the list", () => {
-      fc.assert(fc.property(fc.array(fc.anything(), 30), data => {
+      fc.assert(fc.property(fc.array(fc.anything(), 30), (data) => {
         const list = new List(data);
 
         expect(list.length).toBe(data.length);
@@ -120,13 +120,13 @@ describe("List", () => {
   describe("mutate", () => {
     it("doesn't return any value", () => {
       const list = new List([1, 2, 3]);
-      const result = list.mutate(x => x);
+      const result = list.mutate((x) => x);
 
       expect(result).toBe(undefined);
     });
 
     it("changes the data", () => {
-      const method: MutationMethod<number[]> = data => data.map(gene => gene + 1);
+      const method: MutationMethod<number[]> = (data) => data.map((gene) => gene + 1);
 
       const list = new List([1, 2, 3]);
       list.mutate(method);
@@ -135,7 +135,7 @@ describe("List", () => {
     });
 
     it("throws a TypeError if the method is not a function", () => {
-      fc.assert(fc.property(fc.anything(), method => {
+      fc.assert(fc.property(fc.anything(), (method) => {
         fc.pre(typeof method !== "function");
 
         const list = new List([1, 2, 3]);
@@ -161,11 +161,11 @@ describe("List", () => {
       const b = new List([6, 7, 8]);
 
       const offspring = a.offspring([b], uniform());
-      expect(offspring.every(child => child instanceof List)).toBe(true);
+      expect(offspring.every((child) => child instanceof List)).toBe(true);
     });
 
     it("throws a TypeError if the method is not a function", () => {
-      fc.assert(fc.property(fc.anything(), method => {
+      fc.assert(fc.property(fc.anything(), (method) => {
         fc.pre(typeof method !== "function");
 
         const a = new List([1, 2, 3]);
@@ -178,7 +178,7 @@ describe("List", () => {
     });
 
     it("throws a TypeError if the second argument is not an array", () => {
-      fc.assert(fc.property(fc.anything(), partners => {
+      fc.assert(fc.property(fc.anything(), (partners) => {
         fc.pre(!Array.isArray(partners));
 
         const list = new List([1, 2, 3]);
@@ -196,11 +196,11 @@ describe("List", () => {
       const b = new List([6, 7, 8]);
 
       const children = a.crossover(20, [b], uniform());
-      expect(children.every(child => child instanceof List)).toBe(true);
+      expect(children.every((child) => child instanceof List)).toBe(true);
     });
 
     it("returns correct amount of children", () => {
-      fc.assert(fc.property(fc.integer(1, 100), amount => {
+      fc.assert(fc.property(fc.integer(1, 100), (amount) => {
         const a = new List([1, 2, 3]);
         const b = new List([6, 7, 8]);
 
@@ -221,7 +221,7 @@ describe("List", () => {
     });
 
     it("throws a TypeError if the amount is not a positive integer number", () => {
-      fc.assert(fc.property(fc.anything(), amount => {
+      fc.assert(fc.property(fc.anything(), (amount) => {
         fc.pre(
           typeof amount !== "number" ||
           0 >= amount ||
@@ -255,13 +255,13 @@ describe("List", () => {
 
     it("clones the data using a function if passed", () => {
       const list = new List([1, 2, 3]);
-      const copy = list.clone(data => data.map(gene => gene + 1));
+      const copy = list.clone((data) => data.map((gene) => gene + 1));
 
       expect(copy.data()).toEqual([2, 3, 4]);
     });
 
     it("throws a TypeError if the function was passed but is invalid", () => {
-      fc.assert(fc.property(fc.anything(), func => {
+      fc.assert(fc.property(fc.anything(), (func) => {
         fc.pre(typeof func !== "function" && func !== undefined);
 
         const list = new List([1, 2, 3]);
@@ -275,7 +275,7 @@ describe("List", () => {
 
   describe("__serialize", () => {
     it("returns the data", () => {
-      fc.assert(fc.property(fc.array(fc.integer(), 30), data => {
+      fc.assert(fc.property(fc.array(fc.integer(), 30), (data) => {
         const list = new List(data);
 
         expect(list.__serialize()).toEqual(data);

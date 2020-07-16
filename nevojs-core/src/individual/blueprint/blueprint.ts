@@ -23,7 +23,7 @@ import {
   ResolvedIndividual,
   SerializedIndividual,
 } from "../individual";
-import { isPositiveInt, Resolved } from "../../util";
+import { Resolved, isPositiveInt } from "../../util";
 import { SerializableObject } from "../../serialization";
 import { State } from "../state";
 import { AnyGenotype, UnresolvedGenotype } from "../data";
@@ -131,7 +131,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
       : this.genotypeFunc(arg);
 
     if (genotype instanceof Promise) {
-      return genotype.then(resolvedGenotype => {
+      return genotype.then((resolvedGenotype) => {
         return this.spawn({ ...settings, genotype: () => resolvedGenotype });
       });
     }

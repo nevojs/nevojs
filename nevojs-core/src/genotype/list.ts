@@ -111,7 +111,7 @@ export class List<T> extends AbstractGenotype<T[]> {
    * @param method
    */
   public offspring(partners: List<T>[], method: CrossoverMethod<T[]>): List<T>[] {
-    return super.makeOffspring(partners, method, data => new List(data));
+    return super.makeOffspring(partners, method, (data) => new List(data));
   }
 
   /**

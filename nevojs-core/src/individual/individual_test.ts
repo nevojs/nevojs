@@ -30,17 +30,17 @@ describe("Individual", () => {
     it("returns an instance of Individual", () => {
       const serialized = { genotype: [], state: {}, objectives: [] };
       const individual = Individual.deserialize(serialized, {
-        genotype: data => new List(data),
+        genotype: (data) => new List(data),
       });
 
       expect(individual).toBeInstanceOf(Individual);
     });
 
     it("properly creates a genotype using serialized data and given function", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), data => {
+      fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const serialized = { genotype: data, state: {}, objectives: [] };
         const individual = Individual.deserialize(serialized, {
-          genotype: data => new List(data),
+          genotype: (data) => new List(data),
         });
 
         expect(individual.genotype).toBeInstanceOf(List);
@@ -49,11 +49,11 @@ describe("Individual", () => {
     });
 
     it("properly creates a phenotype using given function", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), data => {
+      fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const serialized = { genotype: data, state: {}, objectives: [] };
         const individual = Individual.deserialize(serialized, {
-          genotype: data => new List(data),
-          phenotype: genotype => ({ firstGene: genotype.data()[0] }),
+          genotype: (data) => new List(data),
+          phenotype: (genotype) => ({ firstGene: genotype.data()[0] }),
         });
 
         expect(individual.phenotype.firstGene).toBe(data[0]);
@@ -63,7 +63,7 @@ describe("Individual", () => {
     it("deserializes the state", () => {
       const serialized = { genotype: [], state: { a: 1, b: 2, c: 3 }, objectives: [] };
       const individual = Individual.deserialize(serialized, {
-        genotype: data => new List(data),
+        genotype: (data) => new List(data),
       });
 
       expect(individual.state.computeAll()).toEqual({
@@ -76,7 +76,7 @@ describe("Individual", () => {
     it("transforms the state using given function", () => {
       const serialized = { genotype: [], state: { a: 1, b: 2, c: 3 }, objectives: [] };
       const individual = Individual.deserialize(serialized, {
-        genotype: data => new List(data),
+        genotype: (data) => new List(data),
         state: () => ({ a: 10, b: 20, c: 30 }),
       });
 
@@ -93,7 +93,7 @@ describe("Individual", () => {
         { value: -5, weight: 2 },
       ];
       const serialized = { genotype: [], state: {}, objectives };
-      const individual = Individual.deserialize(serialized, { genotype: data => new List(data) });
+      const individual = Individual.deserialize(serialized, { genotype: (data) => new List(data) });
 
       expect(individual.objectives().length).toBe(2);
       expect(individual.values()).toEqual([3, -5]);
@@ -110,7 +110,7 @@ describe("Individual", () => {
         ]
       };
 
-      const individual = Individual.deserialize(serialized, { genotype: data => new List(data) });
+      const individual = Individual.deserialize(serialized, { genotype: (data) => new List(data) });
 
       expect(individual.genotype.data()).toEqual([1, 2, NaN, undefined]);
       expect(individual.state.computeAll()).toEqual({ foo: Infinity });
@@ -127,7 +127,7 @@ describe("Individual", () => {
         fc.pre(typeof serialized !== "object" && typeof serialized !== "function");
 
         expect(() => {
-          Individual.deserialize(serialized, { genotype: data => new List(data) });
+          Individual.deserialize(serialized, { genotype: (data) => new List(data) });
         }).toThrow(TypeError);
       }));
     });
@@ -136,7 +136,7 @@ describe("Individual", () => {
   describe("fromJSON", () => {
     it("returns an instance of Individual", () => {
       const serialized = JSON.stringify({ genotype: [], state: {}, objectives: [] });
-      const individual = Individual.fromJSON(serialized, { genotype: data => new List(data) });
+      const individual = Individual.fromJSON(serialized, { genotype: (data) => new List(data) });
 
       expect(individual).toBeInstanceOf(Individual);
     });
@@ -145,7 +145,7 @@ describe("Individual", () => {
       const spy = jest.spyOn(Individual, "deserialize");
 
       const serialized = JSON.stringify({ genotype: [], state: {}, objectives: [] });
-      Individual.fromJSON(serialized, { genotype: data => new List(data) });
+      Individual.fromJSON(serialized, { genotype: (data) => new List(data) });
 
       expect(spy).toBeCalledTimes(1);
       spy.mockClear();
@@ -156,7 +156,7 @@ describe("Individual", () => {
     it("passes the genotype as the first argument in the phenotype function", () => {
       const genotype = new List([]);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const phenotype = jest.fn(genotype => ({}));
+      const phenotype = jest.fn((genotype) => ({}));
 
       new Individual({ genotype, phenotype });
 
@@ -227,7 +227,7 @@ describe("Individual", () => {
 
   describe("phenotype", () => {
     it("is equal to return value of the phenotype function", () => {
-      fc.assert(fc.property(fc.object(), data => {
+      fc.assert(fc.property(fc.object(), (data) => {
         const genotype = new List([]);
         const phenotype = () => data;
 
@@ -248,8 +248,8 @@ describe("Individual", () => {
 
   describe("evaluate", () => {
     it("updates the data returned by Individual.prototype.objectives()", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), values => {
-        const objectives = values.map(value => new Objective(1, value));
+      fc.assert(fc.property(fc.array(fc.integer()), (values) => {
+        const objectives = values.map((value) => new Objective(1, value));
 
         const individual = new Individual({ genotype: new List([]) });
         individual.evaluate(() => objectives);
@@ -259,8 +259,8 @@ describe("Individual", () => {
     });
 
     it("does not return any value if the function passed does not return a Promise", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), values => {
-        const objectives = values.map(value => new Objective(1, value));
+      fc.assert(fc.property(fc.array(fc.integer()), (values) => {
+        const objectives = values.map((value) => new Objective(1, value));
 
         const individual = new Individual({ genotype: new List([]) });
         const evaluation = individual.evaluate(() => objectives);
@@ -270,8 +270,8 @@ describe("Individual", () => {
     });
 
     it("returns Promise if the function passed also returns a Promise", async () => {
-      fc.assert(fc.asyncProperty(fc.array(fc.integer()), async values => {
-        const objectives = values.map(value => new Objective(1, value));
+      fc.assert(fc.asyncProperty(fc.array(fc.integer()), async (values) => {
+        const objectives = values.map((value) => new Objective(1, value));
 
         const individual = new Individual({ genotype: new List([]) });
         const evaluation = individual.evaluate(async () => objectives);
@@ -304,8 +304,8 @@ describe("Individual", () => {
     });
 
     it("returns a copy of the array with objectives returned in the evaluation function", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), values => {
-        const objectives = values.map(value => new Objective(1, value));
+      fc.assert(fc.property(fc.array(fc.integer()), (values) => {
+        const objectives = values.map((value) => new Objective(1, value));
 
         const genotype = new List([]);
         const individual = new Individual({ genotype });
@@ -318,8 +318,8 @@ describe("Individual", () => {
     });
 
     it("returns a copy of the resolved array with objectives returned in the async evaluation function", () => {
-      fc.assert(fc.asyncProperty(fc.array(fc.integer()), async values => {
-        const objectives = values.map(value => new Objective(1, value));
+      fc.assert(fc.asyncProperty(fc.array(fc.integer()), async (values) => {
+        const objectives = values.map((value) => new Objective(1, value));
 
         const genotype =  new List([]);
         const individual = new Individual({ genotype });
@@ -337,7 +337,7 @@ describe("Individual", () => {
       fc.assert(fc.property(fc.array(fc.integer()), fc.nat(), (values, i) => {
         fc.pre(values.length > i);
 
-        const objectives = values.map(value => new Objective(1, value));
+        const objectives = values.map((value) => new Objective(1, value));
         const objective = objectives[i];
 
         const genotype = new List([]);
@@ -352,7 +352,7 @@ describe("Individual", () => {
       fc.assert(fc.property(fc.array(fc.integer()), fc.nat(), (values, i) => {
         fc.pre(i >= values.length);
 
-        const objectives = values.map(value => new Objective(1, value));
+        const objectives = values.map((value) => new Objective(1, value));
 
         const genotype = new List([]);
         const individual = new Individual({ genotype });
@@ -367,8 +367,8 @@ describe("Individual", () => {
 
   describe("setObjectives", () => {
     it("overrides individual's objectives", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), values => {
-        const objectives = values.map(value => new Objective(1, value));
+      fc.assert(fc.property(fc.array(fc.integer()), (values) => {
+        const objectives = values.map((value) => new Objective(1, value));
 
         const genotype = new List([]);
         const individual = new Individual({ genotype });
@@ -396,9 +396,9 @@ describe("Individual", () => {
     it("returns an array with computed fitness of the objectives", () => {
       fc.assert(fc.property(
         fc.array(fc.tuple(fc.integer(), fc.integer())),
-        data => {
+        (data) => {
           const objectives = data.map(([value, weight]) => new Objective(value, weight));
-          const fitness = objectives.map(objective => objective.fitness());
+          const fitness = objectives.map((objective) => objective.fitness());
 
           const genotype = new List([]);
           const individual = new Individual({ genotype });
@@ -414,9 +414,9 @@ describe("Individual", () => {
     it("returns an array with values of the objectives", () => {
       fc.assert(fc.property(
         fc.array(fc.tuple(fc.integer(), fc.integer())),
-        data => {
+        (data) => {
           const objectives = data.map(([value, weight]) => new Objective(value, weight));
-          const values = objectives.map(objective => objective.value);
+          const values = objectives.map((objective) => objective.value);
 
           const genotype = new List([]);
           const individual = new Individual({ genotype });
@@ -437,7 +437,7 @@ describe("Individual", () => {
     });
 
     it("clones the genotype", () => {
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
 
@@ -449,9 +449,9 @@ describe("Individual", () => {
     });
 
     it("clones the genotype using a function if given", () => {
-      const cloneFunction = (genes: number[]) => genes.map(x => x + 1);
+      const cloneFunction = (genes: number[]) => genes.map((x) => x + 1);
 
-      fc.assert(fc.property(fc.array(fc.integer()), data => {
+      fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
 
@@ -462,9 +462,9 @@ describe("Individual", () => {
     });
 
     it("clones the genotype using a default function if specified", () => {
-      const cloneFunction = (genes: number[]) => genes.map(x => x + 1);
+      const cloneFunction = (genes: number[]) => genes.map((x) => x + 1);
 
-      fc.assert(fc.property(fc.array(fc.integer()), data => {
+      fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
         individual.setDefault(Default.Cloning, { genotype: cloneFunction });
@@ -476,7 +476,7 @@ describe("Individual", () => {
     });
 
     it("creates a phenotype using original individual's phenotype function", () => {
-      fc.assert(fc.property(fc.anything(), data => {
+      fc.assert(fc.property(fc.anything(), (data) => {
         const individual = new Individual({
           genotype: new List([]),
           phenotype: () => ({ data }),
@@ -490,7 +490,7 @@ describe("Individual", () => {
     });
 
     it("creates a phenotype using a function if given", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const individual = new Individual({
           genotype: new List([]),
           phenotype: () => ({ value }),
@@ -505,7 +505,7 @@ describe("Individual", () => {
     });
 
     it("creates a phenotype using a default function if specified", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const individual = new Individual({
           genotype: new List([]),
           phenotype: () => ({ value }),
@@ -522,7 +522,7 @@ describe("Individual", () => {
     });
 
     it("clones the state", () => {
-      fc.assert(fc.property(fc.object(), data => {
+      fc.assert(fc.property(fc.object(), (data) => {
         const state = new State(data);
         const genotype = new List([]);
         const individual = new Individual({ genotype, state });
@@ -575,7 +575,7 @@ describe("Individual", () => {
     it("clones objectives", () => {
       fc.assert(fc.property(
         fc.array(fc.tuple(fc.integer(), fc.integer())),
-        data => {
+        (data) => {
           const objectives = data.map(([value, weight]) => new Objective(value, weight));
 
           const genotype = new List([]);
@@ -593,7 +593,7 @@ describe("Individual", () => {
 
   describe("mutate", () => {
     it("does not return any value", () => {
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const genotype = new List<any>([]);
         const individual = new Individual({ genotype });
 
@@ -604,7 +604,7 @@ describe("Individual", () => {
     });
 
     it("mutates the individual's genotype data using a function provided", () => {
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const genotype = new List<any>([]);
         const individual = new Individual({ genotype });
 
@@ -615,7 +615,7 @@ describe("Individual", () => {
     });
 
     it("mutates the individual's genotype data using default mutation method", () => {
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const genotype = new List<any>([]);
         const individual = new Individual({ genotype });
         individual.setDefault(Default.Mutation, () => data);
@@ -780,7 +780,7 @@ describe("Individual", () => {
     });
 
     it("transforms genotype data using a function if given", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), data => {
+      fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
 
@@ -790,7 +790,7 @@ describe("Individual", () => {
     });
 
     it("transforms genotype data using default function is specified", () => {
-      fc.assert(fc.property(fc.array(fc.integer()), data => {
+      fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
         individual.setDefault(Default.Serialization, { genotype: () => data });
@@ -835,7 +835,7 @@ describe("Individual", () => {
     });
 
     it("transforms state data using a function if given", () => {
-      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), data => {
+      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), (data) => {
         const genotype = new List([]);
         const individual = new Individual({ genotype });
 
@@ -846,7 +846,7 @@ describe("Individual", () => {
     });
 
     it("transforms state data using default function if specified", () => {
-      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), data => {
+      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), (data) => {
         const genotype = new List([]);
         const individual = new Individual({ genotype });
         individual.setDefault(Default.Serialization, { state: () => data });
@@ -860,21 +860,21 @@ describe("Individual", () => {
     it("calls Objective.prototype.serialize for each objective", () => {
       const objective = fc.tuple(fc.integer(), fc.integer());
 
-      fc.assert(fc.property(fc.array(objective), data => {
+      fc.assert(fc.property(fc.array(objective), (data) => {
         const genotype = new List([]);
         const individual = new Individual({ genotype });
 
         const objectives = data.map(([value, weight]) => new Objective(value, weight));
         individual.setObjectives(objectives);
 
-        const spies = objectives.map(objective => jest.spyOn(objective, "serialize"));
+        const spies = objectives.map((objective) => jest.spyOn(objective, "serialize"));
         individual.serialize();
 
         const calls = spies.reduce((acc, spy) => acc + spy.mock.calls.length, 0);
 
         expect(calls).toBe(data.length);
 
-        spies.forEach(spy => spy.mockClear());
+        spies.forEach((spy) => spy.mockClear());
       }));
     });
 
@@ -898,10 +898,10 @@ describe("Individual", () => {
         ) {}
       }
 
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         fc.pre(data.length > 0);
 
-        const genotype = new List(data.map(gene => new Gene(gene)));
+        const genotype = new List(data.map((gene) => new Gene(gene)));
         const individual = new Individual({ genotype });
 
         expect(() => {
@@ -911,7 +911,7 @@ describe("Individual", () => {
     });
 
     it("throws an Error if the serialized state is not an object", () => {
-      fc.assert(fc.property(fc.anything(), data => {
+      fc.assert(fc.property(fc.anything(), (data) => {
         const notDefined = data === undefined || data === null;
         const condition = notDefined || (data as any).constructor !== Object;
         fc.pre(condition);
@@ -926,7 +926,7 @@ describe("Individual", () => {
     });
 
     it("throws an Error if the state is not serializable object", () => {
-      fc.assert(fc.property(fc.anything(), data => {
+      fc.assert(fc.property(fc.anything(), (data) => {
         const genotype = new List([]);
         const state = new State({ data: (() => data) as unknown as SerializableObject });
         const individual = new Individual({ genotype, state });
@@ -956,7 +956,7 @@ describe("Individual", () => {
     });
 
     it("calls Individual.prototype.serialize once", () => {
-      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), data => {
+      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), (data) => {
         const genotype = new List([]);
         const state = new State(data);
         const individual = new Individual({ genotype, state });
@@ -976,7 +976,7 @@ describe("Individual", () => {
       const b = new Individual({ genotype: new List([1, 1, 1, 1]) });
 
       const children = a.offspring([b], uniform());
-      expect(children.every(child => child instanceof Individual)).toBe(true);
+      expect(children.every((child) => child instanceof Individual)).toBe(true);
     });
 
     it("returns correct amount of individuals", () => {
@@ -1044,7 +1044,7 @@ describe("Individual", () => {
     });
 
     it("returns correct amount of Individuals", () => {
-      fc.assert(fc.property(fc.integer(1, 10_000), amount => {
+      fc.assert(fc.property(fc.integer(1, 10_000), (amount) => {
         const a = new Individual({ genotype: new List([0, 0, 0, 0]) });
         const b = new Individual({ genotype: new List([1, 1, 1, 1]) });
 

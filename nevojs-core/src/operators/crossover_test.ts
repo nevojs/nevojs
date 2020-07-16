@@ -26,7 +26,7 @@ describe("uniform", () => {
     const children = parentA.offspring([parentB], uniform());
 
     expect(children.length).toBe(2);
-    expect(children.every(child => child instanceof List)).toBe(true);
+    expect(children.every((child) => child instanceof List)).toBe(true);
   });
 
   it("calls Math.random n times", () => {

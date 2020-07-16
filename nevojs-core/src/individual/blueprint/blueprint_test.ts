@@ -36,7 +36,7 @@ import { Default } from "../default_properties";
 describe("Blueprint", () => {
   describe("constructor", () => {
     it("throws a TypeError if the genotype is not a function", () => {
-      fc.assert(fc.property(fc.anything(), genotype => {
+      fc.assert(fc.property(fc.anything(), (genotype) => {
         fc.pre(typeof genotype !== "function");
 
         expect(() => {
@@ -46,7 +46,7 @@ describe("Blueprint", () => {
     });
 
     it("throws a TypeError if the phenotype is specified and is not a function", () => {
-      fc.assert(fc.property(fc.anything(), phenotype => {
+      fc.assert(fc.property(fc.anything(), (phenotype) => {
         fc.pre(phenotype !== undefined && typeof phenotype !== "function");
 
         expect(() => {
@@ -79,7 +79,7 @@ describe("Blueprint", () => {
     });
 
     it("properly assigns a genotype (sync)", () => {
-      fc.assert(fc.property(fc.array(fc.anything(), 50), data => {
+      fc.assert(fc.property(fc.array(fc.anything(), 50), (data) => {
         const blueprint = new Blueprint({
           genotype: () => new List(data),
         });
@@ -92,7 +92,7 @@ describe("Blueprint", () => {
     });
 
     it("properly assigns a genotype (async)", () => {
-      fc.assert(fc.asyncProperty(fc.array(fc.anything(), 50), async data => {
+      fc.assert(fc.asyncProperty(fc.array(fc.anything(), 50), async (data) => {
         const blueprint = new Blueprint({
           genotype: async () => new List(data),
         });
@@ -104,9 +104,9 @@ describe("Blueprint", () => {
     });
 
     it("passes argument to a genotype function provided as 'arg' field when creating", () => {
-      fc.assert(fc.property(fc.anything(), argValue => {
+      fc.assert(fc.property(fc.anything(), (argValue) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const func = jest.fn(arg => new List([]));
+        const func = jest.fn((arg) => new List([]));
         const blueprint = new Blueprint({ genotype: func });
 
         blueprint.spawn({ arg: () => argValue });
@@ -117,9 +117,9 @@ describe("Blueprint", () => {
     it("properly assigns a phenotype", () => {
       const blueprint = new Blueprint({
         genotype: () => new List([5, 6, 7]),
-        phenotype: genotype => ({
+        phenotype: (genotype) => ({
           dataSquared() {
-            return genotype.data().map(x => x ** 2);
+            return genotype.data().map((x) => x ** 2);
           },
         }),
       });
@@ -132,7 +132,7 @@ describe("Blueprint", () => {
     it("passes a genotype as the first argument of the phenotype function (sync)", () => {
       const genotype = new List([]);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const phenotype = jest.fn(genotype => undefined);
+      const phenotype = jest.fn((genotype) => undefined);
 
       const blueprint = new Blueprint({
         genotype: () => genotype,
@@ -146,7 +146,7 @@ describe("Blueprint", () => {
     it("passes a genotype as the first argument of the phenotype function (async)", async () => {
       const genotype = new List([]);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const phenotype = jest.fn(genotype => undefined);
+      const phenotype = jest.fn((genotype) => undefined);
 
       const blueprint = new Blueprint({
         genotype: async () => genotype,
@@ -247,7 +247,7 @@ describe("Blueprint", () => {
       });
 
       const settings: IndividualSerializationSettings<List<number>, unknown> = {
-        genotype: data => data,
+        genotype: (data) => data,
       };
 
       blueprint.setDefault(Default.Serialization, settings);
@@ -257,7 +257,7 @@ describe("Blueprint", () => {
     });
 
     it("properly overrides genotype using given function", () => {
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const blueprint = new Blueprint({
           genotype: () => new List<unknown>([1, 2, 3]),
         });
@@ -268,7 +268,7 @@ describe("Blueprint", () => {
     });
 
     it("properly overrides phenotype using given function", () => {
-      fc.assert(fc.property(fc.array(fc.anything()), data => {
+      fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const blueprint = new Blueprint({
           genotype: () => new List([]),
         });
@@ -290,7 +290,7 @@ describe("Blueprint", () => {
     });
 
     it("throws a TypeError if the settings object is specified but is not an object", () => {
-      fc.assert(fc.property(fc.anything(), settings => {
+      fc.assert(fc.property(fc.anything(), (settings) => {
         fc.pre(typeof settings !== "object" && settings !== undefined);
 
         const blueprint = new Blueprint({
@@ -304,7 +304,7 @@ describe("Blueprint", () => {
     });
 
     it("throws a TypeError if the genotype overriding function is specified but is not a function", () => {
-      fc.assert(fc.property(fc.anything(), func => {
+      fc.assert(fc.property(fc.anything(), (func) => {
         fc.pre(typeof func !== "function" && func !== undefined);
 
         const blueprint = new Blueprint({
@@ -318,7 +318,7 @@ describe("Blueprint", () => {
     });
 
     it("throws a TypeError if the phenotype overriding function is specified but is not a function", () => {
-      fc.assert(fc.property(fc.anything(), func => {
+      fc.assert(fc.property(fc.anything(), (func) => {
         fc.pre(typeof func !== "function" && func !== undefined);
 
         const blueprint = new Blueprint({
@@ -332,7 +332,7 @@ describe("Blueprint", () => {
     });
 
     it("throws a TypeError if the state overriding function is specified but is not a function", () => {
-      fc.assert(fc.property(fc.anything(), func => {
+      fc.assert(fc.property(fc.anything(), (func) => {
         fc.pre(typeof func !== "function" && func !== undefined);
 
         const blueprint = new Blueprint({
@@ -348,7 +348,7 @@ describe("Blueprint", () => {
 
   describe("create", () => {
     it("throws a TypeError if the amount is not a positive integer", () => {
-      fc.assert(fc.property(fc.anything(), amount => {
+      fc.assert(fc.property(fc.anything(), (amount) => {
         fc.pre(typeof amount !== "number" || 0 >= amount || amount % 1 > 0);
 
         const blueprint = new Blueprint({
@@ -367,11 +367,11 @@ describe("Blueprint", () => {
       });
 
       const individuals = blueprint.create(10);
-      expect(individuals.every(ind => ind instanceof Individual)).toBe(true);
+      expect(individuals.every((ind) => ind instanceof Individual)).toBe(true);
     });
 
     it("returns correct amount of individuals", () => {
-      fc.assert(fc.property(fc.integer(1, 300), amount => {
+      fc.assert(fc.property(fc.integer(1, 300), (amount) => {
         const blueprint = new Blueprint({
           genotype: () => new List([]),
         });
@@ -382,7 +382,7 @@ describe("Blueprint", () => {
     });
 
     it("calls 'spawn' method for each created individual", () => {
-      fc.assert(fc.property(fc.integer(1, 300), amount => {
+      fc.assert(fc.property(fc.integer(1, 300), (amount) => {
         const blueprint = new Blueprint({
           genotype: () => new List([]),
         });
@@ -412,7 +412,7 @@ describe("Blueprint", () => {
       });
 
       const serialized: SerializedIndividual = { genotype: [], state: {}, objectives: [] };
-      const deserialized = blueprint.deserialize(serialized, { genotype: data => new List(data) });
+      const deserialized = blueprint.deserialize(serialized, { genotype: (data) => new List(data) });
 
       expect(deserialized).toBeInstanceOf(Individual);
     });
@@ -425,21 +425,21 @@ describe("Blueprint", () => {
       });
 
       const serialized: SerializedIndividual = { genotype: [], state: {}, objectives: [] };
-      blueprint.deserialize(serialized, { genotype: data => new List(data) });
+      blueprint.deserialize(serialized, { genotype: (data) => new List(data) });
 
       expect(spy).toBeCalledTimes(1);
       spy.mockClear();
     });
 
     it("infers the phenotype from the blueprint declaration", () => {
-      fc.assert(fc.property(fc.anything(), value => {
+      fc.assert(fc.property(fc.anything(), (value) => {
         const blueprint = new Blueprint({
           genotype: () => new List([]),
           phenotype: () => ({ value }),
         });
 
         const serialized: SerializedIndividual = { genotype: [], state: {}, objectives: [] };
-        const deserialized = blueprint.deserialize(serialized, { genotype: data => new List(data) });
+        const deserialized = blueprint.deserialize(serialized, { genotype: (data) => new List(data) });
 
         expect(deserialized.phenotype.value).toBe(value);
       }));
@@ -451,7 +451,7 @@ describe("Blueprint", () => {
       });
 
       blueprint.setDefault(Default.Deserialization, {
-        genotype: data => new List(data),
+        genotype: (data) => new List(data),
       });
 
       const individual = blueprint.spawn() as $Individual<typeof blueprint>;
@@ -471,7 +471,7 @@ describe("Blueprint", () => {
       const spy = jest.spyOn(blueprint, "deserialize");
 
       const serialized: SerializedIndividual = { genotype: [], state: {}, objectives: [] };
-      blueprint.fromJSON(JSON.stringify(serialized), { genotype: data => new List(data) });
+      blueprint.fromJSON(JSON.stringify(serialized), { genotype: (data) => new List(data) });
 
       expect(spy).toBeCalledTimes(1);
       spy.mockClear();

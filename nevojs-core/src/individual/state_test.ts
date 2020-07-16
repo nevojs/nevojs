@@ -34,7 +34,7 @@ describe("State", () => {
 
   describe("computeAll", () => {
     it("returns a shallow copy of the data passed in the constructor if unbound", () => {
-      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), data => {
+      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), (data) => {
         const state = new State(data);
 
         expect(state.computeAll()).toEqual(data);
@@ -43,7 +43,7 @@ describe("State", () => {
     });
 
     it("returns computed data if bounded", () => {
-      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), data => {
+      fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), (data) => {
         const state = new State();
 
         for (const [key, value] of Object.entries(data)) {
@@ -83,7 +83,7 @@ describe("State", () => {
 
   describe("compute", () => {
     it("returns the computed value for the given key", () => {
-      fc.assert(fc.property(fc.anything(), value => {
+      fc.assert(fc.property(fc.anything(), (value) => {
         const state = new State();
         state.bind({ x: () => value as SerializableValue });
 
@@ -107,7 +107,7 @@ describe("State", () => {
     });
 
     it("clones a current state data (unbounded)", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const state = new State({ value });
         const copy = state.clone();
 
@@ -116,7 +116,7 @@ describe("State", () => {
     });
 
     it("clones a current state data (bounded)", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const state = new State();
         state.bind({ x: () => value });
         const copy = state.clone();
@@ -126,9 +126,9 @@ describe("State", () => {
     });
 
     it("modifies cloned data using a function if given", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const state = new State({ value });
-        const copy = state.clone(data => ({ value: data.value + 1 }));
+        const copy = state.clone((data) => ({ value: data.value + 1 }));
 
         expect(copy.compute("value")).toBe(value + 1);
       }));
@@ -151,7 +151,7 @@ describe("State", () => {
     });
 
     it("throws a TypeError if the cloning function is specified and is not a function", () => {
-      fc.assert(fc.property(fc.anything(), func => {
+      fc.assert(fc.property(fc.anything(), (func) => {
         fc.pre(func !== undefined && typeof func !== "function");
 
         const state = new State();
@@ -166,7 +166,7 @@ describe("State", () => {
 
   describe("bindings", () => {
     it("returns an object with the bindings", () => {
-      fc.assert(fc.property(fc.integer(), value => {
+      fc.assert(fc.property(fc.integer(), (value) => {
         const binding = () => value;
 
         const state = new State();

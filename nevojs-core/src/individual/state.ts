@@ -1,4 +1,4 @@
-import { serialize, deserialize, SerializableObject, isSerializable } from "../serialization";
+import { SerializableObject, deserialize, isSerializable, serialize } from "../serialization";
 import { isObjectLiteral } from "../util";
 
 type StateBindings<T extends SerializableObject> = {
