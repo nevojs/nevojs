@@ -18,100 +18,73 @@
 import { AnyBlueprint, AsyncBlueprint, SyncBlueprint } from "./individual/blueprint/blueprint_aliases";
 import { AnyIndividual, Individual } from "./individual/individual";
 import { Genotype } from "./individual/data";
-import { Blueprint } from "./individual/blueprint/blueprint";
 import { CrossoverMethod } from "./operators/crossover";
 import { EvaluationFunction } from "./individual/evaluation/evaluation_function";
 import { Group } from "./individual/group";
 import { MutationMethod } from "./operators/mutation";
-import { Resolved } from "./util";
 
 /**
  *
  */
 export type $Genotype<X> =
-  X extends Individual<infer G, any> ? G :
-  X extends AnyBlueprint<infer G, any> ? G :
-  X extends Group<infer I>
-    ? I extends Individual<infer G, any> ? G : never
-    : never;
+  X extends Genotype<any> ? X :
+    X extends Individual<infer G, any> ? G :
+      X extends AnyBlueprint<infer G, any> ? G :
+        X extends Group<infer I>
+          ? I extends Individual<infer G, any> ? G : never
+          : never;
 
 /**
  *
  */
 export type $Phenotype<X> =
   X extends Individual<any, infer P> ? P :
-  X extends AnyBlueprint<any, infer P> ? P :
-  X extends Group<infer I>
-    ? I extends Individual<any, infer P> ? P : never
-    : never;
+    X extends AnyBlueprint<any, infer P> ? P :
+      X extends Group<infer I>
+        ? I extends Individual<any, infer P> ? P : never
+        : never;
 
 /**
  *
  */
-export type $Evaluation<X> =
-  X extends Individual<infer G, infer P> ? EvaluationFunction<G, P> :
-  X extends AnyBlueprint<infer G, infer P> ? EvaluationFunction<Resolved<G>, P> :
-  X extends Group<infer I>
-    ? I extends Individual<infer G, infer P> ? EvaluationFunction<G, P> : never
-    : never;
+export type $Evaluation<X> = EvaluationFunction<$Genotype<X>, $Phenotype<X>>;
 
 /**
  *
  */
-export type $Mutation<X> =
-  X extends Individual<infer G, any> ? MutationMethod<$Data<G>> :
-  X extends Genotype<infer D> ? MutationMethod<D> :
-  X extends AnyBlueprint<infer G, any> ? MutationMethod<$Data<Resolved<G>>> :
-  X extends Group<infer I>
-    ? I extends Individual<infer G, any> ? MutationMethod<$Data<G>> : never
-    : never;
+export type $Mutation<X> = MutationMethod<$Data<X>>;
 
 /**
  *
  */
-export type $Crossover<X> =
-  X extends Individual<infer G, any> ? CrossoverMethod<$Data<G>> :
-  X extends Genotype<infer D> ? CrossoverMethod<D> :
-  X extends AnyBlueprint<infer G, any> ? CrossoverMethod<$Data<Resolved<G>>> :
-  X extends Group<infer I>
-    ? I extends Individual<infer G, any> ? CrossoverMethod<$Data<G>> : never
-    : never;
+export type $Crossover<X> = CrossoverMethod<$Data<X>>;
 
 /**
  *
  */
-export type $Blueprint<I extends AnyIndividual> = Blueprint<$Genotype<I>, $Phenotype<I>>;
+export type $SyncBlueprint<X> = SyncBlueprint<$Genotype<X>, $Phenotype<X>>;
 
 /**
  *
  */
-export type $SyncBlueprint<I extends AnyIndividual> = SyncBlueprint<$Genotype<I>, $Phenotype<I>>;
+export type $AsyncBlueprint<X> = AsyncBlueprint<$Genotype<X>, $Phenotype<X>>;
 
 /**
  *
  */
-export type $AsyncBlueprint<I extends AnyIndividual> = AsyncBlueprint<$Genotype<I>, $Phenotype<I>>;
+export type $Blueprint<I extends AnyIndividual> = $SyncBlueprint<I> | $AsyncBlueprint<I>;
 
 /**
  *
  */
-export type $Individual<X> =
-  X extends Blueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
-  X extends AnyBlueprint<infer G, infer P> ? Individual<Resolved<G>, P> :
-  X extends Group<infer I>
-    ? I
-    : never;
+export type $Individual<X> = Individual<$Genotype<X>, $Phenotype<X>>;
 
 /**
  *
  */
-export type $Group<X> =
-  X extends Individual<infer G, infer P> ? Group<Individual<Resolved<G>, P>> :
-  X extends AnyBlueprint<infer G, infer P>
-    ? Group<Individual<Resolved<G>, P>>
-    : never;
+export type $Group<X> = Group<$Individual<X>>;
 
 /**
  *
  */
-export type $Data<X> = X extends Genotype<infer D> ? D : never;
+export type $Data<X> = $Genotype<X> extends Genotype<infer D> ? D : never;
