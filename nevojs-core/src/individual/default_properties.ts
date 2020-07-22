@@ -45,7 +45,7 @@ export type DefaultValues<G extends AnyGenotype, P> =
 /**
  *
  */
-export abstract class DefaultProperties<T> {
+export class DefaultProperties<T> {
   protected data: Partial<T> = {};
 
   /**
@@ -53,7 +53,7 @@ export abstract class DefaultProperties<T> {
    * @param field
    * @param value
    */
-  public setDefault<K extends keyof T>(
+  public set<K extends keyof T>(
     field: K,
     value: T[K],
   ): void {
@@ -64,7 +64,7 @@ export abstract class DefaultProperties<T> {
    *
    * @param field
    */
-  public hasDefault(field: keyof T): boolean {
+  public has(field: keyof T): boolean {
     return this.data[field] !== undefined;
   }
 
@@ -72,7 +72,7 @@ export abstract class DefaultProperties<T> {
    *
    * @param field
    */
-  public getDefault<K extends keyof T>(field: K): T[K] {
+  public get<K extends keyof T>(field: K): T[K] {
     return this.data[field] as T[K];
   }
 
@@ -80,15 +80,15 @@ export abstract class DefaultProperties<T> {
    *
    * @param individual
    */
-  protected applyDefaults(individual: AnyIndividual): void {
+  public apply(individual: AnyIndividual): void {
     const fields = Object.keys(this.data) as (keyof T)[];
 
     for (const field of fields) {
-      if (!this.hasDefault(field)) {
+      if (!this.has(field)) {
         continue;
       }
 
-      individual.setDefault(field as string, this.getDefault(field));
+      individual.defaults.set(field as string, this.get(field));
     }
   }
 }
