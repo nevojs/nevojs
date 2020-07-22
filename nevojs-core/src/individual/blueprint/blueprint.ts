@@ -71,7 +71,7 @@ type BlueprintSpawnOutput<G extends UnresolvedGenotype, P> = ResolvedIndividual<
 /**
  *
  */
-export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultProperties<IndividualDefaultValues<Resolved<G>, P> & BlueprintDefaultValues<Resolved<G>, P>> {
+export class Blueprint<G extends UnresolvedGenotype, P> {
   /**
    *
    */
@@ -84,11 +84,14 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
 
   /**
    *
+   */
+  public readonly defaults: DefaultProperties<IndividualDefaultValues<Resolved<G>, P> & BlueprintDefaultValues<Resolved<G>, P>> = new DefaultProperties();
+
+  /**
+   *
    * @param settings
    */
   public constructor(settings: BlueprintConstructorSettings<G, P>) {
-    super();
-
     const defaultPhenotypeFunc = () => undefined as unknown as P;
 
     if (typeof settings.genotype !== "function") {
@@ -147,7 +150,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
       state,
     });
 
-    this.applyDefaults(individual);
+    this.defaults.apply(individual);
     return individual;
   }
 
@@ -183,12 +186,12 @@ export class Blueprint<G extends UnresolvedGenotype, P> extends DefaultPropertie
    */
   public deserialize(
     serialized: SerializedIndividual,
-    settings: IndividualDeserializationSettings<Resolved<G>, P> = this.getDefault(Default.Deserialization) ?? {},
+    settings: IndividualDeserializationSettings<Resolved<G>, P> = this.defaults.get(Default.Deserialization) ?? {},
   ): ResolvedIndividual<G, P> {
     settings.phenotype = settings.phenotype ?? this.phenotypeFunc;
 
     const individual = Individual.deserialize(serialized, settings);
-    this.applyDefaults(individual);
+    this.defaults.apply(individual);
 
     return individual;
   }

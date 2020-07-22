@@ -208,11 +208,11 @@ describe("Blueprint", () => {
       });
 
       const evaluation = () => new Objective(5, 2);
-      blueprint.setDefault(Default.Evaluation, evaluation);
+      blueprint.defaults.set(Default.Evaluation, evaluation);
 
       const individual = blueprint.spawn() as $Individual<typeof blueprint>;
 
-      expect(individual.getDefault(Default.Evaluation)).toBe(evaluation);
+      expect(individual.defaults.get(Default.Evaluation)).toBe(evaluation);
     });
 
     it("assigns a default mutation to the individual", () => {
@@ -221,11 +221,11 @@ describe("Blueprint", () => {
       });
 
       const mutation = swap();
-      blueprint.setDefault(Default.Mutation, mutation);
+      blueprint.defaults.set(Default.Mutation, mutation);
 
       const individual = blueprint.spawn() as $Individual<typeof blueprint>;
 
-      expect(individual.getDefault(Default.Mutation)).toBe(mutation);
+      expect(individual.defaults.get(Default.Mutation)).toBe(mutation);
     });
 
     it("assigns a default crossover to the individual", () => {
@@ -234,11 +234,11 @@ describe("Blueprint", () => {
       });
 
       const crossover = uniform();
-      blueprint.setDefault(Default.Crossover, crossover);
+      blueprint.defaults.set(Default.Crossover, crossover);
 
       const individual = blueprint.spawn() as $Individual<typeof blueprint>;
 
-      expect(individual.getDefault(Default.Crossover)).toBe(crossover);
+      expect(individual.defaults.get(Default.Crossover)).toBe(crossover);
     });
 
     it("assigns a default serialization settings to the individual", () => {
@@ -250,10 +250,10 @@ describe("Blueprint", () => {
         genotype: (data) => data,
       };
 
-      blueprint.setDefault(Default.Serialization, settings);
+      blueprint.defaults.set(Default.Serialization, settings);
 
       const individual = blueprint.spawn() as $Individual<typeof blueprint>;
-      expect(individual.getDefault(Default.Serialization)).toBe(settings);
+      expect(individual.defaults.get(Default.Serialization)).toBe(settings);
     });
 
     it("properly overrides genotype using given function", () => {
@@ -450,7 +450,7 @@ describe("Blueprint", () => {
         genotype: () => new List([1, 2, 3]),
       });
 
-      blueprint.setDefault(Default.Deserialization, {
+      blueprint.defaults.set(Default.Deserialization, {
         genotype: (data) => new List(data),
       });
 

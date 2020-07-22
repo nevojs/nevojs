@@ -115,7 +115,7 @@ export type IndividualDefaultValues<G extends AnyGenotype, P> = {
 /**
  *
  */
-export class Individual<G extends AnyGenotype, P> extends DefaultProperties<IndividualDefaultValues<G, P>> {
+export class Individual<G extends AnyGenotype, P> {
   /**
    *
    * @param serialized
@@ -171,6 +171,11 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   /**
    *
    */
+  public readonly defaults: DefaultProperties<IndividualDefaultValues<G, P>> = new DefaultProperties();
+
+  /**
+   *
+   */
   private _objectives: Objective[] = [];
 
   /**
@@ -178,8 +183,6 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    * @param settings
    */
   public constructor(settings: IndividualConstructorSettings<G, P>) {
-    super();
-
     if (settings.genotype === undefined || settings.genotype === null) {
       throw new TypeError();
     }
@@ -204,9 +207,10 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
   /**
    *
    * @param func
+   * @param settings
    */
   public evaluate(
-    func: EvaluationFunction<G, P> = this.getDefault(Default.Evaluation),
+    func: EvaluationFunction<G, P> = this.defaults.get(Default.Evaluation),
   ): void | Promise<void> {
     if (typeof func !== "function") {
       throw new TypeError();
@@ -272,7 +276,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    * @param settings
    */
   public clone(
-    settings: IndividualCloneSettings<G, P> = this.getDefault(Default.Cloning) ?? {},
+    settings: IndividualCloneSettings<G, P> = this.defaults.get(Default.Cloning) ?? {},
   ): Individual<G, P> {
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
@@ -280,7 +284,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
 
     const individual = new Individual({ genotype, phenotype, state });
     individual.setObjectives(this.objectives().map((objective) => objective.clone()));
-    this.applyDefaults(individual);
+    this.defaults.apply(individual);
 
     return individual;
   }
@@ -289,7 +293,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    *
    * @param method
    */
-  public mutate(method: MutationMethod<$Data<G>> = this.getDefault(Default.Mutation)): void {
+  public mutate(method: MutationMethod<$Data<G>> = this.defaults.get(Default.Mutation)): void {
     if (typeof method !== "function") {
       throw new TypeError();
     }
@@ -317,7 +321,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    * @param settings
    */
   public serialize(
-    settings: IndividualSerializationSettings<G, P> = this.getDefault(Default.Serialization) ?? {},
+    settings: IndividualSerializationSettings<G, P> = this.defaults.get(Default.Serialization) ?? {},
   ): SerializedIndividual {
     if (settings.genotype !== undefined && typeof settings.genotype !== "function") {
       throw new TypeError();
@@ -354,8 +358,8 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
    */
   public offspring(
     partners: Individual<G, P>[],
-    method: CrossoverMethod<$Data<G>> = this.getDefault(Default.Crossover),
-    settings: IndividualOffspringSettings<G, P> = this.getDefault(Default.CrossoverSettings) ?? {},
+    method: CrossoverMethod<$Data<G>> = this.defaults.get(Default.Crossover),
+    settings: IndividualOffspringSettings<G, P> = this.defaults.get(Default.CrossoverSettings) ?? {},
   ): Individual<G, P>[] {
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
 
@@ -372,7 +376,7 @@ export class Individual<G extends AnyGenotype, P> extends DefaultProperties<Indi
         : undefined;
 
       const individual = new Individual({ genotype, phenotype, state });
-      this.applyDefaults(individual);
+      this.defaults.apply(individual);
 
       return individual;
     });

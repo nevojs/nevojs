@@ -467,7 +467,7 @@ describe("Individual", () => {
       fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
-        individual.setDefault(Default.Cloning, { genotype: cloneFunction });
+        individual.defaults.set(Default.Cloning, { genotype: cloneFunction });
 
         const copy = individual.clone();
 
@@ -511,7 +511,7 @@ describe("Individual", () => {
           phenotype: () => ({ value }),
         });
 
-        individual.setDefault(Default.Cloning, {
+        individual.defaults.set(Default.Cloning, {
           phenotype: () => ({ value: value + 1 }),
         });
 
@@ -558,7 +558,7 @@ describe("Individual", () => {
         const genotype = new List([]);
         const individual = new Individual({ genotype, state });
 
-        individual.setDefault(Default.Cloning, ({
+        individual.defaults.set(Default.Cloning, ({
           state: (data) => ({
             a: data.a + 1,
             b: data.b + 1,
@@ -618,7 +618,7 @@ describe("Individual", () => {
       fc.assert(fc.property(fc.array(fc.anything()), (data) => {
         const genotype = new List<any>([]);
         const individual = new Individual({ genotype });
-        individual.setDefault(Default.Mutation, () => data);
+        individual.defaults.set(Default.Mutation, () => data);
 
         individual.mutate();
 
@@ -657,7 +657,7 @@ describe("Individual", () => {
 
         const genotype = new List([]);
         const individual = new Individual({ genotype });
-        individual.setDefault(Default.Mutation, method);
+        individual.defaults.set(Default.Mutation, method);
 
         expect(() => {
           individual.mutate();
@@ -793,7 +793,7 @@ describe("Individual", () => {
       fc.assert(fc.property(fc.array(fc.integer()), (data) => {
         const genotype = new List(data);
         const individual = new Individual({ genotype });
-        individual.setDefault(Default.Serialization, { genotype: () => data });
+        individual.defaults.set(Default.Serialization, { genotype: () => data });
 
         const serialized = individual.serialize();
         expect(serialized.genotype).toEqual(data);
@@ -849,7 +849,7 @@ describe("Individual", () => {
       fc.assert(fc.property(fc.dictionary(fc.string(), fc.integer()), (data) => {
         const genotype = new List([]);
         const individual = new Individual({ genotype });
-        individual.setDefault(Default.Serialization, { state: () => data });
+        individual.defaults.set(Default.Serialization, { state: () => data });
 
         const serialized = individual.serialize();
 
