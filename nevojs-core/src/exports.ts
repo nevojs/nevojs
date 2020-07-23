@@ -46,7 +46,7 @@ export {
   IndividualCloneSettings,
   PhenotypeFunction,
 } from "./individual/individual";
-export { Default, DefaultValues, DefaultProperties } from "./individual/default_properties";
+export { Default, DefaultProperties } from "./individual/default_properties";
 export { State } from "./individual/state";
 
 export { EvaluationFunction, Evaluation } from "./individual/evaluation/evaluation_function";

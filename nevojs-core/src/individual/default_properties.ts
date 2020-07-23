@@ -15,12 +15,7 @@
  * =============================================================================
  */
 
-import { AnyGenotype } from "./data";
-import {
-  AnyIndividual,
-  IndividualDefaultValues,
-} from "./individual";
-import { BlueprintDefaultValues } from "./blueprint/blueprint";
+import { AnyIndividual } from "./individual";
 
 /**
  *
@@ -34,13 +29,6 @@ export enum Default {
   Serialization = "serialization",
   Deserialization = "deserialization",
 }
-
-/**
- *
- */
-export type DefaultValues<G extends AnyGenotype, P> =
-  IndividualDefaultValues<G, P> &
-  BlueprintDefaultValues<G, P>;
 
 /**
  *
