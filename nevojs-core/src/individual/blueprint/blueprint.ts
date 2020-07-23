@@ -32,7 +32,7 @@ import { Default, DefaultProperties } from "../default_properties";
 /**
  *
  */
-export type BlueprintDefaultValues<G extends AnyGenotype, P> = {
+export type BlueprintDefaultValues<G extends AnyGenotype, P> = IndividualDefaultValues<G, P> & {
   [Default.Deserialization]: IndividualDeserializationSettings<G, P>;
   [unknownDefault: string]: unknown;
 };
@@ -85,7 +85,7 @@ export class Blueprint<G extends UnresolvedGenotype, P> {
   /**
    *
    */
-  public readonly defaults: DefaultProperties<IndividualDefaultValues<Resolved<G>, P> & BlueprintDefaultValues<Resolved<G>, P>> = new DefaultProperties();
+  public readonly defaults: DefaultProperties<BlueprintDefaultValues<Resolved<G>, P>> = new DefaultProperties();
 
   /**
    *
