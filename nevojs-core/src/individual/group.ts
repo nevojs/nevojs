@@ -35,9 +35,9 @@ export type GroupData<I extends AnyIndividual> = I | I[] | Group<I>;
 /**
  *
  */
-export interface GroupCloneSettings {
+export interface GroupCloneSettings<I extends AnyIndividual> {
   deep?: boolean;
-  func?: IndividualCloneSettings<any, any>;
+  func?: IndividualCloneSettings<$Genotype<I>, $Phenotype<I>>;
 }
 
 /**
@@ -107,7 +107,7 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
   /**
    *
    */
-  public clone(settings: GroupCloneSettings = {}): Group<I> {
+  public clone(settings: GroupCloneSettings<I> = {}): Group<I> {
     const deep = settings.deep ?? false;
 
     if (typeof deep !== "boolean") {
