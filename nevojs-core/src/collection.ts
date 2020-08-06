@@ -116,7 +116,27 @@ export class Collection<T> {
    * @param data
    */
   public set(data: CollectionData<T>): void {
-    this._members = Collection.parse(data);
+    const parsed = Collection.parse(data);
+
+    if (parsed.length > this.size) {
+      throw new Error(`Cannot contain ${parsed.length} members in ${this.size}-sized group`);
+    }
+
+    this._members = parsed;
+  }
+
+  /**
+   *
+   * @param data
+   */
+  public override(data: CollectionData<T>): void {
+    const parsed = Collection.parse(data);
+
+    if (parsed.length > this.size) {
+      this.resize(parsed.length);
+    }
+
+    this._members = parsed;
   }
 
   /**

@@ -55,7 +55,7 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
    *
    */
   public async evaluateAsync(): Promise<void> {
-    return Promise.all(this.members().map((member) => member.evaluate())).then();
+    await Promise.all(this.members().map((member) => member.evaluate()));
   }
 
   /**
@@ -141,14 +141,6 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
     method: SelectionMethod<I>,
   ): I {
     return this.$select(1, method)[0];
-  }
-
-  /**
-   *
-   * @param data
-   */
-  public remove(data: GroupData<I>): void {
-    super.remove(data);
   }
 
   /**
