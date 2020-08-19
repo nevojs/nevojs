@@ -42,7 +42,7 @@
     "fast-check": "1.24.1",
     "jest": "25.1.0",
     "rollup": "1.31.0",
-    "rollup-plugin-terser": "5.2.0",
+    "rollup-plugin-terser": "7.0.0",
     "rollup-plugin-typescript2": "0.25.3",
     "rollup-plugin-uglify": "6.0.4",
     "ts-jest": "25.1.0",
