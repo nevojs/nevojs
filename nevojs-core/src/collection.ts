@@ -16,7 +16,7 @@
  */
 
 import * as validation from "./util";
-import { merge } from "./util";
+import { isPositiveInt, merge } from "./util";
 
 /**
  *
@@ -68,6 +68,14 @@ export class Collection<T> {
 
     const defaultSize = this._members.length || Infinity;
     this._size = settings.size ?? defaultSize;
+
+    if (!Array.isArray(this._members)) {
+      throw new TypeError();
+    }
+
+    if (!isPositiveInt(this._size)) {
+      throw new Error();
+    }
   }
 
   /**
@@ -79,9 +87,13 @@ export class Collection<T> {
 
   /**
    *
+   * @param func
    */
-  public clone(): Collection<T> {
-    const members = this.members();
+  public clone(func?: (member: T) => T): Collection<T> {
+    const members = func === undefined
+      ? this.members()
+      : this.members().map((member) => func(member));
+
     const size = this.size;
 
     return new Collection({ members, size });
@@ -152,6 +164,7 @@ export class Collection<T> {
   public space(): number {
     return this.size - this.length;
   }
+
   /**
    *
    * @param data
