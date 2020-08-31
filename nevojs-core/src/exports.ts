@@ -60,7 +60,7 @@ export { List, ListGenerateFunction } from "./genotype/list";
 
 // group
 export { Collection, CollectionConstructorSettings, CollectionCrowdSettings, CollectionData } from "./collection";
-export { Group, GroupData, GroupCloneSettings } from "./individual/group";
+export { Group, GroupData } from "./individual/group";
 
 export { $Evaluation, $Genotype, $AsyncBlueprint, $Blueprint, $Crossover, $Data, $Group, $Individual, $Mutation, $Phenotype, $SyncBlueprint } from "./util_types";
 

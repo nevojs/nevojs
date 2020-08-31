@@ -35,14 +35,6 @@ export type GroupData<I extends AnyIndividual> = I | I[] | Group<I>;
 /**
  *
  */
-export interface GroupCloneSettings<I extends AnyIndividual> {
-  deep?: boolean;
-  func?: IndividualCloneSettings<$Genotype<I>, $Phenotype<I>>;
-}
-
-/**
- *
- */
 export class Group<I extends AnyIndividual> extends Collection<I> {
   /**
    *
@@ -107,15 +99,9 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
   /**
    *
    */
-  public clone(settings: GroupCloneSettings<I> = {}): Group<I> {
-    const deep = settings.deep ?? false;
-
-    if (typeof deep !== "boolean") {
-      throw new TypeError();
-    }
-
-    const members = deep
-      ? this.members().map((member) => member.clone(settings.func)) as I[]
+  public clone(settings?: IndividualCloneSettings<$Genotype<I>, $Phenotype<I>>): Group<I> {
+    const members = settings
+      ? this.members().map((member) => member.clone(settings)) as I[]
       : this.members();
 
     const { size } = this;
