@@ -98,14 +98,26 @@ export class Group<I extends AnyIndividual> extends Collection<I> {
 
   /**
    *
+   * @param func
    */
-  public clone(settings?: IndividualCloneSettings<$Genotype<I>, $Phenotype<I>>): Group<I> {
-    const members = settings
-      ? this.members().map((member) => member.clone(settings)) as I[]
-      : this.members();
+  public clone(func?: (member: I) => I): Group<I> {
+    const members = func === undefined
+      ? this.members()
+      : this.members().map((member) => func(member));
 
-    const { size } = this;
+    const size = this.size;
+
     return new Group({ members, size });
+  }
+
+  /**
+   *
+   * @param settings
+   */
+  public cloneDeep(
+    settings?: IndividualCloneSettings<$Genotype<I>, $Phenotype<I>>,
+  ): Group<I> {
+    return this.clone((member) => member.clone(settings) as I);
   }
 
   /**
