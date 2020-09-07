@@ -186,11 +186,14 @@ export class Blueprint<G extends UnresolvedGenotype, P> {
    */
   public deserialize(
     serialized: SerializedIndividual,
-    settings: IndividualDeserializationSettings<Resolved<G>, P> = this.defaults.get(Default.Deserialization) ?? {},
+    settings: Partial<IndividualDeserializationSettings<Resolved<G>, P>> = {},
   ): ResolvedIndividual<G, P> {
+    const defaultSettings = this.defaults.get(Default.Deserialization) ?? {};
+    settings = Object.assign({}, defaultSettings, settings);
+
     settings.phenotype = settings.phenotype ?? this.phenotypeFunc;
 
-    const individual = Individual.deserialize(serialized, settings);
+    const individual = Individual.deserialize(serialized, settings as IndividualDeserializationSettings<Resolved<G>, P>);
     this.defaults.apply(individual);
 
     return individual;

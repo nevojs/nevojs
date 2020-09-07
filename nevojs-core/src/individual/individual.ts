@@ -18,13 +18,8 @@
 import { Evaluation, EvaluationFunction } from "./evaluation/evaluation_function";
 import { AnyGenotype, UnresolvedGenotype } from "./data";
 import { Objective, SerializedObjective } from "./evaluation/objective";
-import { Resolved, isPositiveInt, toArray } from "../util";
-import {
-  Serializable,
-  SerializableObject,
-  deserialize, isSerializable,
-  serialize
-} from "../serialization";
+import { isPositiveInt, Resolved, toArray } from "../util";
+import { deserialize, isSerializable, Serializable, SerializableObject, serialize } from "../serialization";
 import { CrossoverMethod } from "../operators/crossover";
 import { Default, DefaultProperties } from "./default_properties";
 import { MutationMethod } from "../operators/mutation";
@@ -207,7 +202,6 @@ export class Individual<G extends AnyGenotype, P> {
   /**
    *
    * @param func
-   * @param settings
    */
   public evaluate(
     func: EvaluationFunction<G, P> = this.defaults.get(Default.Evaluation),
@@ -276,8 +270,11 @@ export class Individual<G extends AnyGenotype, P> {
    * @param settings
    */
   public clone(
-    settings: IndividualCloneSettings<G, P> = this.defaults.get(Default.Cloning) ?? {},
+    settings: IndividualCloneSettings<G, P> = {},
   ): Individual<G, P> {
+    const defaultSettings = this.defaults.get(Default.Cloning) ?? {};
+    settings = Object.assign({}, defaultSettings, settings);
+
     const genotype = this.genotype.clone(settings.genotype) as G;
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
     const state = this.state.clone(settings.state);
@@ -321,8 +318,11 @@ export class Individual<G extends AnyGenotype, P> {
    * @param settings
    */
   public serialize(
-    settings: IndividualSerializationSettings<G, P> = this.defaults.get(Default.Serialization) ?? {},
+    settings: IndividualSerializationSettings<G, P> = {},
   ): SerializedIndividual {
+    const defaultSettings = this.defaults.get(Default.Serialization) ?? {};
+    settings = Object.assign({}, defaultSettings, settings);
+
     if (settings.genotype !== undefined && typeof settings.genotype !== "function") {
       throw new TypeError();
     }
@@ -359,8 +359,11 @@ export class Individual<G extends AnyGenotype, P> {
   public offspring(
     partners: Individual<G, P>[],
     method: CrossoverMethod<$Data<G>> = this.defaults.get(Default.Crossover),
-    settings: IndividualOffspringSettings<G, P> = this.defaults.get(Default.CrossoverSettings) ?? {},
+    settings: IndividualOffspringSettings<G, P> = {},
   ): Individual<G, P>[] {
+    const defaultSettings = this.defaults.get(Default.CrossoverSettings) ?? {};
+    settings = Object.assign({}, defaultSettings, settings);
+
     const phenotype = settings.phenotype ?? this.phenotypeFunc;
 
     if (typeof method !== "function") {
