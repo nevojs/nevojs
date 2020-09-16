@@ -36,6 +36,8 @@ export function shuffle<T>(arr: T[]): T[] {
  * @hidden
  */
 export function choose<T>(arr: T[], n: number): T[] {
+  n = Math.min(n, arr.length);
+
   const picked: T[] = new Array(n);
   const clone = arr.slice();
 
@@ -164,3 +166,8 @@ export function mapObjectValuesRecursively<T extends { constructor: Function }>(
     ? data.map((value) => mapObjectValuesRecursively(value, func))
     : Object.fromEntries(Object.entries(data).map(([key, value]) => [key, mapObjectValuesRecursively(value, func)]));
 }
+
+/**
+ * @hidden
+ */
+export type Defer<T> = Resolved<T> extends T ? T : never;
